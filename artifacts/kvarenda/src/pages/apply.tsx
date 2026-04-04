@@ -14,10 +14,11 @@ import { useToast } from "@/hooks/use-toast";
 import { formatUzs } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { getGetApplicationsQueryKey } from "@workspace/api-client-react";
+import { useI18n, useT } from "@/lib/i18n";
 
 const formSchema = z.object({
-  moveInDate: z.string().min(1, "Move-in date is required"),
-  durationMonths: z.string().min(1, "Duration is required"),
+  moveInDate: z.string().min(1),
+  durationMonths: z.string().min(1),
   purpose: z.string().optional(),
   message: z.string().optional(),
 });
@@ -30,6 +31,8 @@ export function Apply() {
   const { userId, role } = useRole();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { t } = useI18n();
+  const { tr } = useT();
 
   const { data: listing, isLoading } = useGetListing(Number(listingId), {
     query: { enabled: !!listingId, queryKey: ["getListing", Number(listingId)] }
@@ -60,20 +63,22 @@ export function Apply() {
         }
       });
       await queryClient.invalidateQueries({ queryKey: getGetApplicationsQueryKey() });
-      toast({ title: "Application submitted!", description: "The owner will review your application." });
+      toast({ title: tr(t.apply.submitted), description: tr(t.apply.submittedDesc) });
       setLocation("/my/applications");
     } catch (e) {
-      toast({ title: "Error", description: "Failed to submit application.", variant: "destructive" });
+      toast({ title: tr(t.common.error), description: tr(t.apply.error), variant: "destructive" });
     }
   };
 
   if (role !== "tenant") {
     return (
       <div className="container mx-auto px-4 py-20 text-center">
-        <p className="text-muted-foreground">Switch to Tenant role to apply for apartments.</p>
+        <p className="text-muted-foreground">{tr(t.apply.switchTenant)}</p>
       </div>
     );
   }
+
+  const tenantPrice = listing ? Math.round(listing.priceUzs * 1.05) : 0;
 
   return (
     <div className="min-h-screen bg-background">
@@ -81,22 +86,22 @@ export function Apply() {
         <Link href={`/listings/${listingId}`}>
           <Button variant="ghost" size="sm" className="mb-6 gap-2 text-muted-foreground">
             <ArrowLeft className="w-4 h-4" />
-            Back to listing
+            {tr(t.apply.backToListing)}
           </Button>
         </Link>
 
         <div className="bg-card border border-border rounded-2xl overflow-hidden">
           {listing && (
             <div className="bg-muted/50 p-5 border-b border-border">
-              <p className="text-sm text-muted-foreground mb-1">Applying for</p>
+              <p className="text-sm text-muted-foreground mb-1">{tr(t.apply.applyingFor)}</p>
               <h2 className="font-semibold text-foreground">{listing.title}</h2>
               <p className="text-sm text-muted-foreground">{listing.district}, {listing.address}</p>
-              <p className="text-primary font-bold mt-2">{formatUzs(listing.priceUzs)}/mo + 5% service fee</p>
+              <p className="text-primary font-bold mt-2">{formatUzs(tenantPrice)}{tr(t.common.perMonth)}</p>
             </div>
           )}
 
           <div className="p-6">
-            <h1 className="text-xl font-bold mb-6">Submit your application</h1>
+            <h1 className="text-xl font-bold mb-6">{tr(t.apply.submitTitle)}</h1>
 
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
@@ -105,7 +110,7 @@ export function Apply() {
                   name="moveInDate"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Move-in date</FormLabel>
+                      <FormLabel>{tr(t.apply.moveIn)}</FormLabel>
                       <FormControl>
                         <Input type="date" {...field} data-testid="input-move-in-date" />
                       </FormControl>
@@ -119,18 +124,18 @@ export function Apply() {
                   name="durationMonths"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Rental duration</FormLabel>
+                      <FormLabel>{tr(t.apply.duration)}</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger data-testid="select-duration">
-                            <SelectValue placeholder="Select duration" />
+                            <SelectValue placeholder={tr(t.apply.selectDuration)} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="3">3 months</SelectItem>
-                          <SelectItem value="6">6 months</SelectItem>
-                          <SelectItem value="12">12 months</SelectItem>
-                          <SelectItem value="24">24 months</SelectItem>
+                          <SelectItem value="3">{tr(t.apply.months3)}</SelectItem>
+                          <SelectItem value="6">{tr(t.apply.months6)}</SelectItem>
+                          <SelectItem value="12">{tr(t.apply.months12)}</SelectItem>
+                          <SelectItem value="24">{tr(t.apply.months24)}</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -143,19 +148,19 @@ export function Apply() {
                   name="purpose"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Purpose of rental</FormLabel>
+                      <FormLabel>{tr(t.apply.purpose)}</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger data-testid="select-purpose">
-                            <SelectValue placeholder="Select purpose" />
+                            <SelectValue placeholder={tr(t.apply.selectPurpose)} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="Family residence">Family residence</SelectItem>
-                          <SelectItem value="Single occupancy">Single occupancy</SelectItem>
-                          <SelectItem value="Work relocation">Work relocation</SelectItem>
-                          <SelectItem value="Student housing">Student housing</SelectItem>
-                          <SelectItem value="Temporary accommodation">Temporary accommodation</SelectItem>
+                          <SelectItem value="Family residence">{tr(t.apply.purposeFamily)}</SelectItem>
+                          <SelectItem value="Single occupancy">{tr(t.apply.purposeSingle)}</SelectItem>
+                          <SelectItem value="Work relocation">{tr(t.apply.purposeWork)}</SelectItem>
+                          <SelectItem value="Student housing">{tr(t.apply.purposeStudent)}</SelectItem>
+                          <SelectItem value="Temporary accommodation">{tr(t.apply.purposeTemp)}</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -168,11 +173,11 @@ export function Apply() {
                   name="message"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Message to owner (optional)</FormLabel>
+                      <FormLabel>{tr(t.apply.message)}</FormLabel>
                       <FormControl>
                         <Textarea
                           rows={4}
-                          placeholder="Introduce yourself and tell the owner about your situation..."
+                          placeholder={tr(t.apply.messagePlaceholder)}
                           {...field}
                           data-testid="textarea-message"
                         />
@@ -183,7 +188,7 @@ export function Apply() {
                 />
 
                 <div className="bg-muted/50 rounded-xl p-4 text-sm text-muted-foreground">
-                  By submitting this application, you agree that Kvarenda may share your profile information with the owner for review purposes. A 5% monthly service fee applies upon activation.
+                  {tr(t.apply.agreement)}
                 </div>
 
                 <Button
@@ -192,7 +197,7 @@ export function Apply() {
                   disabled={createApplication.isPending}
                   data-testid="button-submit-application"
                 >
-                  {createApplication.isPending ? "Submitting..." : "Submit Application"}
+                  {createApplication.isPending ? tr(t.apply.submitting) : tr(t.apply.submit)}
                 </Button>
               </form>
             </Form>

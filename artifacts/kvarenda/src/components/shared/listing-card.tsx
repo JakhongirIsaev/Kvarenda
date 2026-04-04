@@ -1,15 +1,19 @@
 import { Link } from "wouter";
 import { formatUzs } from "@/lib/utils";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { MapPin, Bed, Maximize } from "lucide-react";
 import { Listing } from "@workspace/api-client-react";
 import { VerifiedOwnerBadge, ProtectedRentBadge, TourBadge, InsuranceBadge } from "./trust-badges";
+import { useI18n, useT } from "@/lib/i18n";
 
 export function ListingCard({ listing }: { listing: Listing }) {
-  // Use generated images as fallback
+  const { t } = useI18n();
+  const { tr } = useT();
+
   const mockImages = ["/images/apt1.png", "/images/apt2.png", "/images/apt3.png"];
   const photoUrl = listing.photos && listing.photos.length > 0 ? listing.photos[0] : mockImages[listing.id % mockImages.length];
+
+  const tenantPrice = Math.round(listing.priceUzs * 1.05);
 
   return (
     <Link href={`/listings/${listing.id}`}>
@@ -26,7 +30,7 @@ export function ListingCard({ listing }: { listing: Listing }) {
             {listing.has3dTour && <TourBadge />}
           </div>
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4 pt-12">
-            <h3 className="text-white font-semibold text-lg line-clamp-1">{formatUzs(listing.priceUzs)} <span className="text-white/80 text-sm font-normal">/mo</span></h3>
+            <h3 className="text-white font-semibold text-lg line-clamp-1">{formatUzs(tenantPrice)} <span className="text-white/80 text-sm font-normal">{tr(t.common.perMonth)}</span></h3>
           </div>
         </div>
         <CardContent className="p-4 flex-grow">
@@ -38,7 +42,7 @@ export function ListingCard({ listing }: { listing: Listing }) {
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center">
               <Bed className="w-4 h-4 mr-1" />
-              {listing.rooms} {listing.rooms === 1 ? 'room' : 'rooms'}
+              {listing.rooms} {listing.rooms === 1 ? tr(t.card.room) : tr(t.card.rooms)}
             </div>
             {listing.area && (
               <div className="flex items-center">
@@ -49,7 +53,7 @@ export function ListingCard({ listing }: { listing: Listing }) {
           </div>
         </CardContent>
         <CardFooter className="p-4 pt-0 text-xs text-muted-foreground border-t border-border/10 mt-auto">
-          Listed by {listing.ownerName || "Owner"}
+          {tr(t.card.listedBy)} {listing.ownerName || "Owner"}
         </CardFooter>
       </Card>
     </Link>

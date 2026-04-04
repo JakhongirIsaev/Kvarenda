@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -6,16 +6,17 @@ import { Listing } from "@workspace/api-client-react";
 import { formatUzs } from "@/lib/utils";
 import { Link } from "wouter";
 import { MapPin, Bed, Maximize } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useI18n, useT } from "@/lib/i18n";
 
 const TASHKENT_CENTER: [number, number] = [41.3275, 69.2700];
 const DEFAULT_ZOOM = 12;
 
 const createPriceIcon = (price: number, isActive: boolean) => {
-  const formatted = price >= 1000000
-    ? `${(price / 1000000).toFixed(1)}M`
-    : `${(price / 1000).toFixed(0)}K`;
+  const tenantPrice = Math.round(price * 1.05);
+  const formatted = tenantPrice >= 1000000
+    ? `${(tenantPrice / 1000000).toFixed(1)}M`
+    : `${(tenantPrice / 1000).toFixed(0)}K`;
 
   return L.divIcon({
     className: "custom-marker",
@@ -65,6 +66,8 @@ function MapBounds({ listings }: { listings: Listing[] }) {
 
 export function ListingMap({ listings, className = "", height = "500px" }: ListingMapProps) {
   const [activeId, setActiveId] = useState<number | null>(null);
+  const { t } = useI18n();
+  const { tr } = useT();
 
   const mappable = listings.filter(l => l.latitude && l.longitude);
 
@@ -122,9 +125,9 @@ export function ListingMap({ listings, className = "", height = "500px" }: Listi
                     )}
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-primary text-sm">{formatUzs(listing.priceUzs)}/mo</span>
+                    <span className="font-bold text-primary text-sm">{formatUzs(Math.round(listing.priceUzs * 1.05))}{tr(t.common.perMonth)}</span>
                     <Link href={`/listings/${listing.id}`}>
-                      <Button size="sm" className="h-7 text-xs">View</Button>
+                      <Button size="sm" className="h-7 text-xs">{tr(t.map.view)}</Button>
                     </Link>
                   </div>
                 </div>

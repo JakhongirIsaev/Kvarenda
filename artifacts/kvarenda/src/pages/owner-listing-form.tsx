@@ -13,17 +13,18 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useGetListing, useCreateListing, useUpdateListing } from "@workspace/api-client-react";
 import { useRole } from "@/lib/role-context";
 import { useToast } from "@/hooks/use-toast";
+import { useI18n, useT } from "@/lib/i18n";
 
 const DISTRICTS = ["Yunusobod", "Mirzo Ulugbek", "Chilonzor", "Shaykhontohur", "Yakkasaroy", "Uchtepa", "Olmazor", "Sergeli"];
 const AMENITIES = ["WiFi", "Air conditioning", "Washing machine", "Parking", "Elevator", "Security", "Balcony", "Furniture", "Kitchen appliances", "TV"];
 
 const formSchema = z.object({
-  title: z.string().min(5, "Title must be at least 5 characters"),
+  title: z.string().min(5),
   description: z.string().optional(),
-  address: z.string().min(1, "Address is required"),
-  district: z.string().min(1, "District is required"),
-  priceUzs: z.string().min(1, "Price is required"),
-  rooms: z.string().min(1, "Rooms is required"),
+  address: z.string().min(1),
+  district: z.string().min(1),
+  priceUzs: z.string().min(1),
+  rooms: z.string().min(1),
   area: z.string().optional(),
   floor: z.string().optional(),
   totalFloors: z.string().optional(),
@@ -40,6 +41,8 @@ export function OwnerListingForm() {
   const [, setLocation] = useLocation();
   const { userId, role } = useRole();
   const { toast } = useToast();
+  const { t } = useI18n();
+  const { tr } = useT();
 
   const { data: existing } = useGetListing(Number(id), {
     query: { enabled: isEditing, queryKey: ["getListing", Number(id), "edit"] }
@@ -106,21 +109,21 @@ export function OwnerListingForm() {
     try {
       if (isEditing) {
         await updateListing.mutateAsync({ id: Number(id), data: payload });
-        toast({ title: "Listing updated!" });
+        toast({ title: tr(t.ownerForm.updated) });
       } else {
         await createListing.mutateAsync({ data: payload });
-        toast({ title: "Listing created!" });
+        toast({ title: tr(t.ownerForm.created) });
       }
       setLocation("/owner");
     } catch (e) {
-      toast({ title: "Error", description: "Failed to save listing.", variant: "destructive" });
+      toast({ title: tr(t.common.error), description: tr(t.ownerForm.saveError), variant: "destructive" });
     }
   };
 
   if (role !== "owner") {
     return (
       <div className="container mx-auto px-4 py-20 text-center text-muted-foreground">
-        Switch to Owner role to manage listings.
+        {tr(t.ownerForm.switchOwner)}
       </div>
     );
   }
@@ -133,12 +136,12 @@ export function OwnerListingForm() {
         <Link href="/owner">
           <Button variant="ghost" size="sm" className="mb-6 gap-2 text-muted-foreground">
             <ArrowLeft className="w-4 h-4" />
-            Back to dashboard
+            {tr(t.ownerForm.backToDashboard)}
           </Button>
         </Link>
 
         <div className="bg-card border border-border rounded-2xl p-6">
-          <h1 className="text-xl font-bold mb-6">{isEditing ? "Edit Listing" : "Add New Listing"}</h1>
+          <h1 className="text-xl font-bold mb-6">{isEditing ? tr(t.ownerForm.editTitle) : tr(t.ownerForm.addTitle)}</h1>
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
@@ -147,9 +150,9 @@ export function OwnerListingForm() {
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Listing title</FormLabel>
+                    <FormLabel>{tr(t.ownerForm.listingTitle)}</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. Modern 2-room apartment in Yunusobod" {...field} data-testid="input-title" />
+                      <Input placeholder={tr(t.ownerForm.titlePlaceholder)} {...field} data-testid="input-title" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -162,11 +165,11 @@ export function OwnerListingForm() {
                   name="district"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>District</FormLabel>
+                      <FormLabel>{tr(t.ownerForm.district)}</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger data-testid="select-district">
-                            <SelectValue placeholder="Select district" />
+                            <SelectValue placeholder={tr(t.ownerForm.selectDistrict)} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -185,9 +188,9 @@ export function OwnerListingForm() {
                   name="address"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Address</FormLabel>
+                      <FormLabel>{tr(t.ownerForm.address)}</FormLabel>
                       <FormControl>
-                        <Input placeholder="Street address" {...field} data-testid="input-address" />
+                        <Input placeholder={tr(t.ownerForm.addressPlaceholder)} {...field} data-testid="input-address" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -201,9 +204,9 @@ export function OwnerListingForm() {
                   name="priceUzs"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Monthly price (so'm)</FormLabel>
+                      <FormLabel>{tr(t.ownerForm.monthlyPrice)}</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="e.g. 3000000" {...field} data-testid="input-price" />
+                        <Input type="number" placeholder={tr(t.ownerForm.pricePlaceholder)} {...field} data-testid="input-price" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -215,7 +218,7 @@ export function OwnerListingForm() {
                   name="rooms"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Rooms</FormLabel>
+                      <FormLabel>{tr(t.ownerForm.rooms)}</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger data-testid="select-rooms">
@@ -242,9 +245,9 @@ export function OwnerListingForm() {
                   name="area"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Area (m²)</FormLabel>
+                      <FormLabel>{tr(t.ownerForm.area)}</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="e.g. 65" {...field} data-testid="input-area" />
+                        <Input type="number" placeholder={tr(t.ownerForm.areaPlaceholder)} {...field} data-testid="input-area" />
                       </FormControl>
                     </FormItem>
                   )}
@@ -254,7 +257,7 @@ export function OwnerListingForm() {
                   name="floor"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Floor</FormLabel>
+                      <FormLabel>{tr(t.ownerForm.floor)}</FormLabel>
                       <FormControl>
                         <Input type="number" placeholder="3" {...field} data-testid="input-floor" />
                       </FormControl>
@@ -266,7 +269,7 @@ export function OwnerListingForm() {
                   name="totalFloors"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Total floors</FormLabel>
+                      <FormLabel>{tr(t.ownerForm.totalFloors)}</FormLabel>
                       <FormControl>
                         <Input type="number" placeholder="9" {...field} data-testid="input-total-floors" />
                       </FormControl>
@@ -280,9 +283,9 @@ export function OwnerListingForm() {
                 name="deposit"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Security deposit (so'm, optional)</FormLabel>
+                    <FormLabel>{tr(t.ownerForm.deposit)}</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="e.g. 6000000" {...field} data-testid="input-deposit" />
+                      <Input type="number" placeholder={tr(t.ownerForm.depositPlaceholder)} {...field} data-testid="input-deposit" />
                     </FormControl>
                   </FormItem>
                 )}
@@ -293,16 +296,16 @@ export function OwnerListingForm() {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>{tr(t.ownerForm.description)}</FormLabel>
                     <FormControl>
-                      <Textarea rows={4} placeholder="Describe your apartment..." {...field} data-testid="textarea-description" />
+                      <Textarea rows={4} placeholder={tr(t.ownerForm.descPlaceholder)} {...field} data-testid="textarea-description" />
                     </FormControl>
                   </FormItem>
                 )}
               />
 
               <div>
-                <p className="text-sm font-medium mb-3">Amenities</p>
+                <p className="text-sm font-medium mb-3">{tr(t.ownerForm.amenities)}</p>
                 <div className="grid grid-cols-2 gap-2">
                   {AMENITIES.map(amenity => (
                     <div key={amenity} className="flex items-center gap-2">
@@ -329,9 +332,9 @@ export function OwnerListingForm() {
                 name="rules"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>House rules (optional)</FormLabel>
+                    <FormLabel>{tr(t.ownerForm.houseRules)}</FormLabel>
                     <FormControl>
-                      <Textarea rows={3} placeholder="No smoking, no pets..." {...field} data-testid="textarea-rules" />
+                      <Textarea rows={3} placeholder={tr(t.ownerForm.rulesPlaceholder)} {...field} data-testid="textarea-rules" />
                     </FormControl>
                   </FormItem>
                 )}
@@ -339,7 +342,7 @@ export function OwnerListingForm() {
 
               <div className="flex gap-3 pt-2">
                 <Link href="/owner">
-                  <Button type="button" variant="outline" className="flex-1">Cancel</Button>
+                  <Button type="button" variant="outline" className="flex-1">{tr(t.ownerForm.cancel)}</Button>
                 </Link>
                 <Button
                   type="submit"
@@ -347,7 +350,7 @@ export function OwnerListingForm() {
                   disabled={createListing.isPending || updateListing.isPending}
                   data-testid="button-save-listing"
                 >
-                  {createListing.isPending || updateListing.isPending ? "Saving..." : isEditing ? "Save changes" : "Create listing"}
+                  {createListing.isPending || updateListing.isPending ? tr(t.ownerForm.saving) : isEditing ? tr(t.ownerForm.saveChanges) : tr(t.ownerForm.createListing)}
                 </Button>
               </div>
             </form>

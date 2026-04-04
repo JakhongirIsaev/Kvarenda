@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useLocation, Link } from "wouter";
 import { Search, MapPin, Shield, CheckCircle2, DollarSign, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useGetListings } from "@workspace/api-client-react";
 import { ListingCard } from "@/components/shared/listing-card";
@@ -96,7 +95,6 @@ export function Home() {
             <div className="mt-6 md:mt-8 flex flex-wrap items-center justify-center gap-3 md:gap-4">
               <VerifiedOwnerBadge />
               <ProtectedRentBadge />
-              <Badge variant="outline" className="bg-background/50 backdrop-blur">{tr(t.home.flatFee)}</Badge>
             </div>
           </motion.div>
         </div>
@@ -164,7 +162,7 @@ export function Home() {
             {[
               { icon: CheckCircle2, title: tr(t.home.verifiedOwners), desc: tr(t.home.verifiedDesc), color: "text-blue-500 bg-blue-50" },
               { icon: Shield, title: tr(t.home.protectedRent), desc: tr(t.home.protectedDesc), color: "text-green-500 bg-green-50" },
-              { icon: DollarSign, title: tr(t.home.flatFeeTitle), desc: tr(t.home.flatFeeDesc), color: "text-primary bg-primary/10" },
+              { icon: DollarSign, title: tr(t.home.transparentTitle), desc: tr(t.home.transparentDesc), color: "text-primary bg-primary/10" },
               { icon: Eye, title: tr(t.home.tours3d), desc: tr(t.home.tours3dDesc), color: "text-purple-500 bg-purple-50" },
             ].map((feature, i) => (
               <motion.div key={feature.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="bg-card border border-border rounded-xl p-6 text-center">

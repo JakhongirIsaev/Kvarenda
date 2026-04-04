@@ -8,7 +8,7 @@ Full-stack apartment rental platform (Zillow/Zumper-inspired) built for the Uzbe
 
 - **UZS pricing** - All prices in Uzbek Som, formatted as "2,500,000 so'm"
 - **Trust badges** - Verified Owner (blue), Protected Rent (green), 3D Tour (purple), Insurance (orange)
-- **5% service fee** - Monthly service fee on top of rent, shown in all breakdowns
+- **5% service fee** - Hidden from tenants; owner sets base price, tenants see price×1.05 seamlessly; admin panel shows raw fee breakdown
 - **Role simulation** - Header dropdown switcher: Tenant (userId=1), Owner (userId=2), Admin (userId=3)
 - **Tashkent districts** - Yunusobod, Mirzo Ulugbek, Chilonzor, Shaykhontohur, Yakkasaroy, Uchtepa, Olmazor, Sergeli
 - **Interactive map** - Leaflet/OpenStreetMap map with price markers on home page

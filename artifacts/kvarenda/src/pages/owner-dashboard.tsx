@@ -8,10 +8,13 @@ import { useRole } from "@/lib/role-context";
 import { useToast } from "@/hooks/use-toast";
 import { formatUzs } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { useI18n, useT } from "@/lib/i18n";
 
 export function OwnerDashboard() {
   const { userId, role } = useRole();
   const { toast } = useToast();
+  const { t } = useI18n();
+  const { tr } = useT();
 
   const { data: dashboard, isLoading } = useGetOwnerDashboard(userId);
   const { data: applications, refetch: refetchApps } = useGetApplications({ ownerId: userId });
@@ -26,9 +29,9 @@ export function OwnerDashboard() {
     try {
       await updateApp.mutateAsync({ id, data: { status: "approved" } });
       await refetchApps();
-      toast({ title: "Application approved!" });
+      toast({ title: tr(t.owner.approved) });
     } catch {
-      toast({ title: "Error", description: "Failed to approve.", variant: "destructive" });
+      toast({ title: tr(t.common.error), description: tr(t.owner.approveError), variant: "destructive" });
     }
   };
 
@@ -36,16 +39,16 @@ export function OwnerDashboard() {
     try {
       await updateApp.mutateAsync({ id, data: { status: "rejected" } });
       await refetchApps();
-      toast({ title: "Application rejected." });
+      toast({ title: tr(t.owner.rejected) });
     } catch {
-      toast({ title: "Error", description: "Failed to reject.", variant: "destructive" });
+      toast({ title: tr(t.common.error), description: tr(t.owner.rejectError), variant: "destructive" });
     }
   };
 
   if (role !== "owner") {
     return (
       <div className="container mx-auto px-4 py-20 text-center">
-        <p className="text-muted-foreground">Switch to Owner role to access the owner dashboard.</p>
+        <p className="text-muted-foreground">{tr(t.owner.switchOwner)}</p>
       </div>
     );
   }
@@ -55,18 +58,17 @@ export function OwnerDashboard() {
       <div className="container mx-auto px-4 py-8 max-w-5xl">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold">Owner Dashboard</h1>
-            <p className="text-muted-foreground">Manage your listings and applications</p>
+            <h1 className="text-2xl font-bold">{tr(t.owner.title)}</h1>
+            <p className="text-muted-foreground">{tr(t.owner.subtitle)}</p>
           </div>
           <Link href="/owner/listings/new">
             <Button className="gap-2" data-testid="button-new-listing">
               <Plus className="w-4 h-4" />
-              Add Listing
+              {tr(t.owner.addListing)}
             </Button>
           </Link>
         </div>
 
-        {/* Stats */}
         {isLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {[1, 2, 3, 4].map(i => <div key={i} className="h-24 bg-muted animate-pulse rounded-xl" />)}
@@ -74,10 +76,10 @@ export function OwnerDashboard() {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {[
-              { label: "Active listings", value: dashboard?.activeListings ?? 0, icon: Building },
-              { label: "Applications", value: dashboard?.totalApplications ?? 0, icon: Users },
-              { label: "Active rentals", value: dashboard?.activeRentals ?? 0, icon: Home },
-              { label: "Monthly income", value: formatUzs(dashboard?.monthlyIncomeUzs ?? 0), icon: DollarSign },
+              { label: tr(t.owner.activeListings), value: dashboard?.activeListings ?? 0, icon: Building },
+              { label: tr(t.owner.totalApps), value: dashboard?.totalApplications ?? 0, icon: Users },
+              { label: tr(t.owner.activeRentals), value: dashboard?.activeRentals ?? 0, icon: Home },
+              { label: tr(t.owner.monthlyIncome), value: formatUzs(dashboard?.monthlyIncomeUzs ?? 0), icon: DollarSign },
             ].map((stat) => (
               <motion.div
                 key={stat.label}
@@ -95,26 +97,26 @@ export function OwnerDashboard() {
 
         <Tabs defaultValue="listings">
           <TabsList className="mb-6">
-            <TabsTrigger value="listings" data-testid="tab-listings">Listings</TabsTrigger>
+            <TabsTrigger value="listings" data-testid="tab-listings">{tr(t.owner.listings)}</TabsTrigger>
             <TabsTrigger value="applications" data-testid="tab-applications">
-              Applications
+              {tr(t.owner.totalApps)}
               {(dashboard?.pendingApplications ?? 0) > 0 && (
                 <Badge className="ml-2 h-5 w-5 p-0 flex items-center justify-center text-xs">
                   {dashboard?.pendingApplications}
                 </Badge>
               )}
             </TabsTrigger>
-            <TabsTrigger value="rentals" data-testid="tab-rentals">Active Rentals</TabsTrigger>
+            <TabsTrigger value="rentals" data-testid="tab-rentals">{tr(t.owner.rentals)}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="listings">
             {listings.length === 0 ? (
               <div className="text-center py-16 bg-card border border-border rounded-2xl">
                 <Building className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-                <p className="font-medium mb-1">No listings yet</p>
-                <p className="text-sm text-muted-foreground mb-4">Add your first apartment to start getting applications</p>
+                <p className="font-medium mb-1">{tr(t.owner.noListings)}</p>
+                <p className="text-sm text-muted-foreground mb-4">{tr(t.owner.noListingsSub)}</p>
                 <Link href="/owner/listings/new">
-                  <Button>Add first listing</Button>
+                  <Button>{tr(t.owner.addFirstListing)}</Button>
                 </Link>
               </div>
             ) : (
@@ -126,17 +128,17 @@ export function OwnerDashboard() {
                     )}
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-foreground truncate">{listing.title}</p>
-                      <p className="text-sm text-muted-foreground">{listing.district} · {formatUzs(listing.priceUzs)}/mo</p>
+                      <p className="text-sm text-muted-foreground">{listing.district} · {formatUzs(listing.priceUzs)}{tr(t.common.perMonth)}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge variant="outline" className={listing.status === "active" ? "text-green-700 border-green-200" : "text-gray-600 border-gray-200"}>
                         {listing.status}
                       </Badge>
                       <Link href={`/listings/${listing.id}`}>
-                        <Button size="sm" variant="ghost" className="h-8">View</Button>
+                        <Button size="sm" variant="ghost" className="h-8">{tr(t.common.view)}</Button>
                       </Link>
                       <Link href={`/owner/listings/${listing.id}/edit`}>
-                        <Button size="sm" variant="outline" className="h-8">Edit</Button>
+                        <Button size="sm" variant="outline" className="h-8">{tr(t.common.edit)}</Button>
                       </Link>
                     </div>
                   </div>
@@ -148,7 +150,7 @@ export function OwnerDashboard() {
           <TabsContent value="applications">
             {!applications || applications.length === 0 ? (
               <div className="text-center py-16 bg-card border border-border rounded-2xl text-muted-foreground">
-                No applications yet
+                {tr(t.owner.noApps)}
               </div>
             ) : (
               <div className="space-y-3">
@@ -168,7 +170,7 @@ export function OwnerDashboard() {
                         <p className="font-medium">{app.tenantName}</p>
                         <p className="text-sm text-muted-foreground">{app.listingTitle}</p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          Move in: {app.moveInDate} · {app.durationMonths} months
+                          {tr(t.myApps.moveIn)}: {app.moveInDate} · {app.durationMonths} {tr(t.myApps.months)}
                         </p>
                         {app.message && (
                           <p className="text-sm text-muted-foreground mt-2 italic">"{app.message}"</p>
@@ -184,7 +186,7 @@ export function OwnerDashboard() {
                             disabled={updateApp.isPending}
                             data-testid={`button-reject-${app.id}`}
                           >
-                            Reject
+                            {tr(t.owner.reject)}
                           </Button>
                           <Button
                             size="sm"
@@ -193,7 +195,7 @@ export function OwnerDashboard() {
                             disabled={updateApp.isPending}
                             data-testid={`button-approve-${app.id}`}
                           >
-                            Approve
+                            {tr(t.owner.approve)}
                           </Button>
                         </div>
                       )}
@@ -207,7 +209,7 @@ export function OwnerDashboard() {
           <TabsContent value="rentals">
             {rentals.length === 0 ? (
               <div className="text-center py-16 bg-card border border-border rounded-2xl text-muted-foreground">
-                No active rentals yet
+                {tr(t.owner.noRentals)}
               </div>
             ) : (
               <div className="space-y-3">
@@ -216,14 +218,14 @@ export function OwnerDashboard() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="font-medium">{rental.listingTitle}</p>
-                        <p className="text-sm text-muted-foreground">Tenant: {rental.tenantName}</p>
+                        <p className="text-sm text-muted-foreground">{tr(t.owner.tenant)}: {rental.tenantName}</p>
                         <p className="text-xs text-muted-foreground mt-1">
                           {rental.startDate} → {rental.endDate}
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold text-primary">{formatUzs(rental.monthlyRentUzs)}/mo</p>
-                        <Badge variant="outline" className="text-green-700 border-green-200 mt-1">Active</Badge>
+                        <p className="font-bold text-primary">{formatUzs(rental.monthlyRentUzs)}{tr(t.common.perMonth)}</p>
+                        <Badge variant="outline" className="text-green-700 border-green-200 mt-1">{tr(t.rental.active)}</Badge>
                       </div>
                     </div>
                   </div>

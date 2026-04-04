@@ -62,7 +62,7 @@ export function Footer() {
         <div className="border-t border-background/10 mt-10 pt-6 flex flex-col md:flex-row items-center justify-between text-sm text-background/40">
           <p>&copy; {new Date().getFullYear()} Kvarenda. {tr(t.footer.rights)}</p>
           <div className="flex items-center gap-1 mt-2 md:mt-0">
-            <span>{tr(t.footer.flatFee)}</span>
+            <span>{tr(t.footer.transparentPricing)}</span>
             <span className="mx-2">&middot;</span>
             <span>{tr(t.footer.noHidden)}</span>
             <span className="mx-2">&middot;</span>

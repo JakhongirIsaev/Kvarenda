@@ -48,7 +48,6 @@ export function Admin() {
           <p className="text-muted-foreground">{tr(t.admin.overview)}</p>
         </div>
 
-        {/* Stats Grid */}
         {statsLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
             {[1, 2, 3, 4, 5].map(i => <div key={i} className="h-28 bg-muted animate-pulse rounded-xl" />)}
@@ -86,19 +85,18 @@ export function Admin() {
             <TabsTrigger value="payments" data-testid="tab-payments">{tr(t.admin.payments)} ({payments.length})</TabsTrigger>
           </TabsList>
 
-          {/* Users */}
           <TabsContent value="users">
             <div className="bg-card border border-border rounded-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-muted/50 border-b border-border">
                     <tr>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">ID</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Name</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Email</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Role</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Verified</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Phone</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.id)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.name)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.email)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.role)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.verified)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.phone)}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
@@ -132,21 +130,20 @@ export function Admin() {
             </div>
           </TabsContent>
 
-          {/* Listings */}
           <TabsContent value="listings">
             <div className="bg-card border border-border rounded-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-muted/50 border-b border-border">
                     <tr>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">ID</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Title</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">District</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Price</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Plan</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Status</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Owner</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Actions</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.id)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.title2)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.district)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.price)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.plan)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.status)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.owner)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.actions)}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
@@ -170,7 +167,7 @@ export function Admin() {
                         <td className="px-4 py-3">
                           <Link href={`/listings/${listing.id}`}>
                             <Button size="sm" variant="ghost" className="h-7 text-xs gap-1">
-                              <Eye className="w-3 h-3" /> View
+                              <Eye className="w-3 h-3" /> {tr(t.admin.view)}
                             </Button>
                           </Link>
                         </td>
@@ -182,20 +179,19 @@ export function Admin() {
             </div>
           </TabsContent>
 
-          {/* Applications */}
           <TabsContent value="applications">
             <div className="bg-card border border-border rounded-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-muted/50 border-b border-border">
                     <tr>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">ID</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Tenant</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Listing</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Move-in</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Duration</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Status</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Created</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.id)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.tenant)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.listing)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.moveIn)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.duration)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.status)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.created)}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
@@ -205,7 +201,7 @@ export function Admin() {
                         <td className="px-4 py-3 font-medium">{app.tenantName}</td>
                         <td className="px-4 py-3 text-muted-foreground max-w-[200px] truncate">{app.listingTitle}</td>
                         <td className="px-4 py-3 text-muted-foreground">{app.moveInDate}</td>
-                        <td className="px-4 py-3">{app.durationMonths} mo</td>
+                        <td className="px-4 py-3">{app.durationMonths} {tr(t.myApps.months)}</td>
                         <td className="px-4 py-3">
                           <Badge variant="outline" className={
                             app.status === "approved" ? "text-green-700 border-green-200 bg-green-50" :
@@ -225,21 +221,20 @@ export function Admin() {
             </div>
           </TabsContent>
 
-          {/* Payments */}
           <TabsContent value="payments">
             <div className="bg-card border border-border rounded-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-muted/50 border-b border-border">
                     <tr>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">ID</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Period</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Rent</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Fee</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Total</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Method</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Status</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Confirmed</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.id)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.period)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.rent)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.fee)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.total)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.method)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.status)}</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">{tr(t.admin.confirmed)}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">

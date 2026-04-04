@@ -10,6 +10,7 @@ import { formatUzs } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { VerifiedOwnerBadge, ProtectedRentBadge, TourBadge, InsuranceBadge } from "@/components/shared/trust-badges";
 import { useToast } from "@/hooks/use-toast";
+import { useI18n, useT } from "@/lib/i18n";
 
 export function ListingDetail() {
   const { id } = useParams<{ id: string }>();
@@ -17,13 +18,14 @@ export function ListingDetail() {
   const { role, userId } = useRole();
   const { toast } = useToast();
   const [photoIdx, setPhotoIdx] = useState(0);
+  const { t } = useI18n();
+  const { tr } = useT();
 
   const { data: listing, isLoading } = useGetListing(Number(id), {
     query: { enabled: !!id, queryKey: ["getListing", Number(id)] }
   });
 
-  const serviceFee = listing ? Math.round(listing.priceUzs * 0.05) : 0;
-  const total = listing ? listing.priceUzs + serviceFee : 0;
+  const tenantPrice = listing ? Math.round(listing.priceUzs * 1.05) : 0;
 
   if (isLoading) {
     return (
@@ -40,9 +42,9 @@ export function ListingDetail() {
   if (!listing) {
     return (
       <div className="container mx-auto px-4 py-20 text-center">
-        <p className="text-muted-foreground">Listing not found</p>
+        <p className="text-muted-foreground">{tr(t.detail.notFound)}</p>
         <Link href="/listings">
-          <Button variant="outline" className="mt-4">Back to listings</Button>
+          <Button variant="outline" className="mt-4">{tr(t.detail.backToListings)}</Button>
         </Link>
       </div>
     );
@@ -60,13 +62,12 @@ export function ListingDetail() {
         <Link href="/listings">
           <Button variant="ghost" size="sm" className="mb-4 gap-2 text-muted-foreground hover:text-foreground">
             <ArrowLeft className="w-4 h-4" />
-            Back to listings
+            {tr(t.detail.backToListings)}
           </Button>
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            {/* Photo Gallery */}
             <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-muted group">
               <AnimatePresence mode="wait">
                 <motion.img
@@ -116,13 +117,12 @@ export function ListingDetail() {
                 {listing.plan === "pro" && (
                   <Badge className="bg-yellow-500 text-white border-0">
                     <Star className="w-3 h-3 mr-1" />
-                    Pro
+                    {tr(t.detail.pro)}
                   </Badge>
                 )}
               </div>
             </div>
 
-            {/* Thumbnail strip */}
             {photos.length > 1 && (
               <div className="flex gap-2 overflow-x-auto pb-1">
                 {photos.map((photo, i) => (
@@ -137,7 +137,6 @@ export function ListingDetail() {
               </div>
             )}
 
-            {/* Title and Info */}
             <div>
               <h1 className="text-2xl font-bold text-foreground mb-2">{listing.title}</h1>
               <div className="flex items-center text-muted-foreground gap-1 mb-4">
@@ -148,7 +147,7 @@ export function ListingDetail() {
               <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-1">
                   <Bed className="w-4 h-4" />
-                  {listing.rooms} {listing.rooms === 1 ? "room" : "rooms"}
+                  {listing.rooms} {listing.rooms === 1 ? tr(t.detail.room) : tr(t.detail.rooms)}
                 </div>
                 {listing.area && (
                   <div className="flex items-center gap-1">
@@ -157,25 +156,23 @@ export function ListingDetail() {
                   </div>
                 )}
                 {listing.floor && (
-                  <div>Floor {listing.floor}{listing.totalFloors ? `/${listing.totalFloors}` : ""}</div>
+                  <div>{tr(t.detail.floor)} {listing.floor}{listing.totalFloors ? `/${listing.totalFloors}` : ""}</div>
                 )}
               </div>
             </div>
 
             <Separator />
 
-            {/* Description */}
             {listing.description && (
               <div>
-                <h2 className="text-lg font-semibold mb-3">About this apartment</h2>
+                <h2 className="text-lg font-semibold mb-3">{tr(t.detail.about)}</h2>
                 <p className="text-muted-foreground leading-relaxed">{listing.description}</p>
               </div>
             )}
 
-            {/* Amenities */}
             {listing.amenities && listing.amenities.length > 0 && (
               <div>
-                <h2 className="text-lg font-semibold mb-3">Amenities</h2>
+                <h2 className="text-lg font-semibold mb-3">{tr(t.detail.amenities)}</h2>
                 <div className="flex flex-wrap gap-2">
                   {listing.amenities.map((amenity) => (
                     <Badge key={amenity} variant="outline" className="text-sm py-1 px-3">
@@ -186,19 +183,17 @@ export function ListingDetail() {
               </div>
             )}
 
-            {/* House Rules */}
             {listing.rules && (
               <div>
-                <h2 className="text-lg font-semibold mb-3">House Rules</h2>
+                <h2 className="text-lg font-semibold mb-3">{tr(t.detail.rules)}</h2>
                 <p className="text-muted-foreground">{listing.rules}</p>
               </div>
             )}
 
             <Separator />
 
-            {/* Owner */}
             <div>
-              <h2 className="text-lg font-semibold mb-3">Owner</h2>
+              <h2 className="text-lg font-semibold mb-3">{tr(t.detail.ownerSection)}</h2>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
                   {listing.ownerName?.[0] ?? "O"}
@@ -207,9 +202,9 @@ export function ListingDetail() {
                   <p className="font-medium">{listing.ownerName}</p>
                   <div className="flex items-center gap-1 text-sm text-muted-foreground">
                     {listing.ownerVerified ? (
-                      <><ShieldCheck className="w-3 h-3 text-blue-500" /> Verified owner</>
+                      <><ShieldCheck className="w-3 h-3 text-blue-500" /> {tr(t.detail.verifiedOwner)}</>
                     ) : (
-                      <><Shield className="w-3 h-3" /> Unverified</>
+                      <><Shield className="w-3 h-3" /> {tr(t.detail.unverified)}</>
                     )}
                   </div>
                 </div>
@@ -217,37 +212,20 @@ export function ListingDetail() {
             </div>
           </div>
 
-          {/* Right: Pricing Card */}
           <div className="lg:col-span-1">
             <div className="sticky top-24 bg-card border border-border rounded-2xl p-6 shadow-sm space-y-5">
               <div>
-                <p className="text-sm text-muted-foreground">Monthly rent</p>
-                <p className="text-3xl font-bold text-foreground">{formatUzs(listing.priceUzs)}</p>
+                <p className="text-sm text-muted-foreground">{tr(t.detail.monthlyRent)}</p>
+                <p className="text-3xl font-bold text-foreground">{formatUzs(tenantPrice)}</p>
               </div>
 
               <div className="bg-muted/50 rounded-xl p-4 space-y-3 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Rent</span>
-                  <span className="font-medium">{formatUzs(listing.priceUzs)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground flex items-center gap-1">
-                    <Shield className="w-3 h-3 text-green-500" />
-                    Service fee (5%)
-                  </span>
-                  <span className="font-medium">{formatUzs(serviceFee)}</span>
-                </div>
                 {listing.deposit && listing.deposit > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Deposit (once)</span>
+                    <span className="text-muted-foreground">{tr(t.detail.depositOnce)}</span>
                     <span className="font-medium">{formatUzs(listing.deposit)}</span>
                   </div>
                 )}
-                <Separator />
-                <div className="flex justify-between font-semibold">
-                  <span>Total monthly</span>
-                  <span>{formatUzs(total)}</span>
-                </div>
               </div>
 
               <div className="space-y-2">
@@ -263,20 +241,20 @@ export function ListingDetail() {
                   onClick={() => setLocation(`/apply/${listing.id}`)}
                   data-testid="button-apply"
                 >
-                  Apply for this apartment
+                  {tr(t.detail.applyFor)}
                 </Button>
               ) : role === "owner" ? (
                 <div className="text-center text-sm text-muted-foreground p-3 bg-muted rounded-lg">
-                  Switch to Tenant role to apply
+                  {tr(t.detail.switchTenant)}
                 </div>
               ) : (
                 <Button variant="outline" className="w-full" onClick={() => setLocation(`/owner/listings/${listing.id}/edit`)}>
-                  Edit listing (Admin)
+                  {tr(t.detail.editAdmin)}
                 </Button>
               )}
 
               <p className="text-xs text-center text-muted-foreground">
-                No commitment. Cancel anytime. Protected by Kvarenda.
+                {tr(t.detail.noCommitment)}
               </p>
             </div>
           </div>

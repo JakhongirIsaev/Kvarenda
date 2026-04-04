@@ -50,8 +50,8 @@ export function Header() {
 
         <div className="flex items-center gap-2">
           <Select value={lang} onValueChange={(val) => setLang(val as Language)}>
-            <SelectTrigger className="w-[70px] h-8 text-xs gap-1">
-              <Globe className="w-3.5 h-3.5" />
+            <SelectTrigger className="w-[80px] h-9 text-xs gap-1">
+              <Globe className="w-3.5 h-3.5 flex-shrink-0" />
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -62,7 +62,7 @@ export function Header() {
           </Select>
 
           <Select value={role} onValueChange={(val: any) => setRole(val)}>
-            <SelectTrigger className="w-[100px] md:w-[110px] h-8 text-xs md:text-sm">
+            <SelectTrigger className="w-auto min-w-[110px] md:min-w-[130px] h-9 text-xs md:text-sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
