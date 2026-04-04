@@ -3,20 +3,34 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Kvarenda rental platform API for Uzbekistan
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: listings
+    description: Apartment listings
+  - name: applications
+    description: Rental applications
+  - name: contracts
+    description: Rental contracts
+  - name: payments
+    description: Payments and payment history
+  - name: rentals
+    description: Active rentals
+  - name: users
+    description: User management
+  - name: dashboard
+    description: Dashboard summaries
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +38,608 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /listings:
+    get:
+      operationId: getListings
+      tags: [listings]
+      summary: Search and filter listings
+      parameters:
+        - name: district
+          in: query
+          schema:
+            type: string
+        - name: rooms
+          in: query
+          schema:
+            type: integer
+        - name: minPrice
+          in: query
+          schema:
+            type: integer
+        - name: maxPrice
+          in: query
+          schema:
+            type: integer
+        - name: amenities
+          in: query
+          schema:
+            type: string
+        - name: verified
+          in: query
+          schema:
+            type: boolean
+        - name: has3dTour
+          in: query
+          schema:
+            type: boolean
+        - name: hasInsurance
+          in: query
+          schema:
+            type: boolean
+        - name: plan
+          in: query
+          schema:
+            type: string
+            enum: [basic, pro]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of listings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListingsResponse"
+
+    post:
+      operationId: createListing
+      tags: [listings]
+      summary: Create a new listing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateListingBody"
+      responses:
+        "201":
+          description: Created listing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listing"
+
+  /listings/{id}:
+    get:
+      operationId: getListing
+      tags: [listings]
+      summary: Get listing details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Listing details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listing"
+
+    put:
+      operationId: updateListing
+      tags: [listings]
+      summary: Update a listing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateListingBody"
+      responses:
+        "200":
+          description: Updated listing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listing"
+
+  /listings/{id}/publish:
+    post:
+      operationId: publishListing
+      tags: [listings]
+      summary: Publish or unpublish a listing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                published:
+                  type: boolean
+              required: [published]
+      responses:
+        "200":
+          description: Updated listing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listing"
+
+  /users:
+    get:
+      operationId: getUsers
+      tags: [users]
+      summary: Get all users (admin only)
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+
+    post:
+      operationId: createUser
+      tags: [users]
+      summary: Create or register a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserBody"
+      responses:
+        "201":
+          description: Created user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /users/{id}:
+    get:
+      operationId: getUser
+      tags: [users]
+      summary: Get user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+    put:
+      operationId: updateUser
+      tags: [users]
+      summary: Update user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserBody"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /applications:
+    get:
+      operationId: getApplications
+      tags: [applications]
+      summary: Get rental applications
+      parameters:
+        - name: listingId
+          in: query
+          schema:
+            type: integer
+        - name: tenantId
+          in: query
+          schema:
+            type: integer
+        - name: ownerId
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, approved, rejected, cancelled]
+      responses:
+        "200":
+          description: List of applications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Application"
+
+    post:
+      operationId: createApplication
+      tags: [applications]
+      summary: Submit a rental application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateApplicationBody"
+      responses:
+        "201":
+          description: Created application
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+
+  /applications/{id}:
+    get:
+      operationId: getApplication
+      tags: [applications]
+      summary: Get application details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Application details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+
+  /applications/{id}/status:
+    put:
+      operationId: updateApplicationStatus
+      tags: [applications]
+      summary: Approve or reject an application
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [approved, rejected]
+                note:
+                  type: string
+              required: [status]
+      responses:
+        "200":
+          description: Updated application
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+
+  /contracts:
+    get:
+      operationId: getContracts
+      tags: [contracts]
+      summary: Get contracts
+      parameters:
+        - name: tenantId
+          in: query
+          schema:
+            type: integer
+        - name: ownerId
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [draft, pending_signatures, active, terminated]
+      responses:
+        "200":
+          description: List of contracts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Contract"
+
+    post:
+      operationId: createContract
+      tags: [contracts]
+      summary: Generate a contract from an approved application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateContractBody"
+      responses:
+        "201":
+          description: Created contract
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contract"
+
+  /contracts/{id}:
+    get:
+      operationId: getContract
+      tags: [contracts]
+      summary: Get contract details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Contract details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contract"
+
+  /contracts/{id}/sign:
+    post:
+      operationId: signContract
+      tags: [contracts]
+      summary: Sign a contract (tenant or owner)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: string
+                  enum: [tenant, owner]
+              required: [role]
+      responses:
+        "200":
+          description: Updated contract
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contract"
+
+  /payments:
+    get:
+      operationId: getPayments
+      tags: [payments]
+      summary: Get payment history
+      parameters:
+        - name: rentalId
+          in: query
+          schema:
+            type: integer
+        - name: tenantId
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, completed, failed, declared]
+      responses:
+        "200":
+          description: List of payments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Payment"
+
+    post:
+      operationId: createPayment
+      tags: [payments]
+      summary: Create or process a payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePaymentBody"
+      responses:
+        "201":
+          description: Created payment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Payment"
+
+  /payments/{id}/confirm:
+    post:
+      operationId: confirmCashPayment
+      tags: [payments]
+      summary: Owner confirms cash payment receipt
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Confirmed payment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Payment"
+
+  /rentals:
+    get:
+      operationId: getRentals
+      tags: [rentals]
+      summary: Get active rentals
+      parameters:
+        - name: tenantId
+          in: query
+          schema:
+            type: integer
+        - name: ownerId
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, completed, terminated]
+      responses:
+        "200":
+          description: List of rentals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Rental"
+
+  /rentals/{id}:
+    get:
+      operationId: getRental
+      tags: [rentals]
+      summary: Get rental details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Rental details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rental"
+
+  /dashboard/stats:
+    get:
+      operationId: getDashboardStats
+      tags: [dashboard]
+      summary: Get platform-wide statistics (admin)
+      responses:
+        "200":
+          description: Dashboard statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  /dashboard/owner/{ownerId}:
+    get:
+      operationId: getOwnerDashboard
+      tags: [dashboard]
+      summary: Get owner dashboard summary
+      parameters:
+        - name: ownerId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Owner dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OwnerDashboard"
+
+  /dashboard/tenant/{tenantId}:
+    get:
+      operationId: getTenantDashboard
+      tags: [dashboard]
+      summary: Get tenant dashboard summary
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Tenant dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantDashboard"
+
+  /listings/featured:
+    get:
+      operationId: getFeaturedListings
+      tags: [listings]
+      summary: Get featured and pro listings for homepage
+      responses:
+        "200":
+          description: Featured listings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListingsResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +647,513 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+          enum: [tenant, owner, admin]
+        verified:
+          type: boolean
+        myIdVerified:
+          type: boolean
+        avatarUrl:
+          type: string
+        createdAt:
+          type: string
+      required: [id, name, email, role, verified, myIdVerified, createdAt]
+
+    CreateUserBody:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+          enum: [tenant, owner, admin]
+        avatarUrl:
+          type: string
+      required: [name, email, role]
+
+    UpdateUserBody:
+      type: object
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+        verified:
+          type: boolean
+        myIdVerified:
+          type: boolean
+        avatarUrl:
+          type: string
+
+    Listing:
+      type: object
+      properties:
+        id:
+          type: integer
+        ownerId:
+          type: integer
+        ownerName:
+          type: string
+        ownerVerified:
+          type: boolean
+        title:
+          type: string
+        description:
+          type: string
+        address:
+          type: string
+        district:
+          type: string
+        rooms:
+          type: integer
+        floor:
+          type: integer
+        totalFloors:
+          type: integer
+        area:
+          type: number
+        priceUzs:
+          type: integer
+        deposit:
+          type: integer
+        plan:
+          type: string
+          enum: [basic, pro]
+        status:
+          type: string
+          enum: [draft, pending_moderation, active, inactive]
+        published:
+          type: boolean
+        verified:
+          type: boolean
+        has3dTour:
+          type: boolean
+        hasInsurance:
+          type: boolean
+        insuranceStatus:
+          type: string
+          enum: [none, available, insured]
+        amenities:
+          type: array
+          items:
+            type: string
+        photos:
+          type: array
+          items:
+            type: string
+        rules:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        createdAt:
+          type: string
+      required: [id, ownerId, title, address, district, rooms, priceUzs, plan, status, published, verified, has3dTour, hasInsurance, insuranceStatus, createdAt]
+
+    ListingsResponse:
+      type: object
+      properties:
+        listings:
+          type: array
+          items:
+            $ref: "#/components/schemas/Listing"
+        total:
+          type: integer
+        offset:
+          type: integer
+        limit:
+          type: integer
+      required: [listings, total, offset, limit]
+
+    CreateListingBody:
+      type: object
+      properties:
+        ownerId:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        address:
+          type: string
+        district:
+          type: string
+        rooms:
+          type: integer
+        floor:
+          type: integer
+        totalFloors:
+          type: integer
+        area:
+          type: number
+        priceUzs:
+          type: integer
+        deposit:
+          type: integer
+        plan:
+          type: string
+          enum: [basic, pro]
+        amenities:
+          type: array
+          items:
+            type: string
+        photos:
+          type: array
+          items:
+            type: string
+        rules:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+      required: [ownerId, title, address, district, rooms, priceUzs, plan]
+
+    UpdateListingBody:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        address:
+          type: string
+        district:
+          type: string
+        rooms:
+          type: integer
+        floor:
+          type: integer
+        totalFloors:
+          type: integer
+        area:
+          type: number
+        priceUzs:
+          type: integer
+        deposit:
+          type: integer
+        plan:
+          type: string
+          enum: [basic, pro]
+        status:
+          type: string
+          enum: [draft, pending_moderation, active, inactive]
+        amenities:
+          type: array
+          items:
+            type: string
+        photos:
+          type: array
+          items:
+            type: string
+        rules:
+          type: string
+        has3dTour:
+          type: boolean
+        hasInsurance:
+          type: boolean
+        insuranceStatus:
+          type: string
+          enum: [none, available, insured]
+
+    Application:
+      type: object
+      properties:
+        id:
+          type: integer
+        listingId:
+          type: integer
+        tenantId:
+          type: integer
+        tenantName:
+          type: string
+        tenantVerified:
+          type: boolean
+        listingTitle:
+          type: string
+        district:
+          type: string
+        priceUzs:
+          type: integer
+        moveInDate:
+          type: string
+        durationMonths:
+          type: integer
+        purpose:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+          enum: [pending, approved, rejected, cancelled]
+        note:
+          type: string
+        createdAt:
+          type: string
+      required: [id, listingId, tenantId, moveInDate, durationMonths, status, createdAt]
+
+    CreateApplicationBody:
+      type: object
+      properties:
+        listingId:
+          type: integer
+        tenantId:
+          type: integer
+        moveInDate:
+          type: string
+        durationMonths:
+          type: integer
+        purpose:
+          type: string
+        message:
+          type: string
+      required: [listingId, tenantId, moveInDate, durationMonths]
+
+    Contract:
+      type: object
+      properties:
+        id:
+          type: integer
+        applicationId:
+          type: integer
+        listingId:
+          type: integer
+        tenantId:
+          type: integer
+        ownerId:
+          type: integer
+        tenantName:
+          type: string
+        ownerName:
+          type: string
+        listingTitle:
+          type: string
+        address:
+          type: string
+        startDate:
+          type: string
+        endDate:
+          type: string
+        monthlyRentUzs:
+          type: integer
+        depositUzs:
+          type: integer
+        serviceFeePercent:
+          type: number
+        status:
+          type: string
+          enum: [draft, pending_signatures, active, terminated]
+        tenantSigned:
+          type: boolean
+        ownerSigned:
+          type: boolean
+        tenantSignedAt:
+          type: string
+        ownerSignedAt:
+          type: string
+        terms:
+          type: string
+        createdAt:
+          type: string
+      required: [id, listingId, tenantId, ownerId, startDate, endDate, monthlyRentUzs, depositUzs, serviceFeePercent, status, tenantSigned, ownerSigned, createdAt]
+
+    CreateContractBody:
+      type: object
+      properties:
+        applicationId:
+          type: integer
+        startDate:
+          type: string
+        endDate:
+          type: string
+        terms:
+          type: string
+      required: [applicationId, startDate, endDate]
+
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+        rentalId:
+          type: integer
+        tenantId:
+          type: integer
+        period:
+          type: string
+        amountUzs:
+          type: integer
+        serviceFeeUzs:
+          type: integer
+        totalUzs:
+          type: integer
+        method:
+          type: string
+          enum: [online, cash]
+        status:
+          type: string
+          enum: [pending, completed, failed, declared]
+        ownerConfirmed:
+          type: boolean
+        paidAt:
+          type: string
+        createdAt:
+          type: string
+      required: [id, rentalId, tenantId, period, amountUzs, serviceFeeUzs, totalUzs, method, status, ownerConfirmed, createdAt]
+
+    CreatePaymentBody:
+      type: object
+      properties:
+        rentalId:
+          type: integer
+        tenantId:
+          type: integer
+        period:
+          type: string
+        amountUzs:
+          type: integer
+        method:
+          type: string
+          enum: [online, cash]
+      required: [rentalId, tenantId, period, amountUzs, method]
+
+    Rental:
+      type: object
+      properties:
+        id:
+          type: integer
+        contractId:
+          type: integer
+        listingId:
+          type: integer
+        tenantId:
+          type: integer
+        ownerId:
+          type: integer
+        tenantName:
+          type: string
+        ownerName:
+          type: string
+        listingTitle:
+          type: string
+        address:
+          type: string
+        district:
+          type: string
+        monthlyRentUzs:
+          type: integer
+        serviceFeeUzs:
+          type: integer
+        startDate:
+          type: string
+        endDate:
+          type: string
+        status:
+          type: string
+          enum: [active, completed, terminated]
+        protectedRent:
+          type: boolean
+        insuranceStatus:
+          type: string
+          enum: [none, available, insured]
+        nextPaymentDate:
+          type: string
+        totalPaid:
+          type: integer
+        paymentsCount:
+          type: integer
+        photos:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+      required: [id, contractId, listingId, tenantId, ownerId, monthlyRentUzs, serviceFeeUzs, startDate, endDate, status, protectedRent, createdAt]
+
+    DashboardStats:
+      type: object
+      properties:
+        totalListings:
+          type: integer
+        activeListings:
+          type: integer
+        totalUsers:
+          type: integer
+        totalTenants:
+          type: integer
+        totalOwners:
+          type: integer
+        activeRentals:
+          type: integer
+        pendingApplications:
+          type: integer
+        totalRevenueUzs:
+          type: integer
+        monthlyRevenueUzs:
+          type: integer
+        proListingsCount:
+          type: integer
+      required: [totalListings, activeListings, totalUsers, totalTenants, totalOwners, activeRentals, pendingApplications, totalRevenueUzs, monthlyRevenueUzs, proListingsCount]
+
+    OwnerDashboard:
+      type: object
+      properties:
+        ownerId:
+          type: integer
+        activeListings:
+          type: integer
+        totalApplications:
+          type: integer
+        pendingApplications:
+          type: integer
+        activeRentals:
+          type: integer
+        totalIncomeUzs:
+          type: integer
+        monthlyIncomeUzs:
+          type: integer
+        recentApplications:
+          type: array
+          items:
+            $ref: "#/components/schemas/Application"
+      required: [ownerId, activeListings, totalApplications, pendingApplications, activeRentals, totalIncomeUzs, monthlyIncomeUzs, recentApplications]
+
+    TenantDashboard:
+      type: object
+      properties:
+        tenantId:
+          type: integer
+        currentRental:
+          $ref: "#/components/schemas/Rental"
+        pendingApplications:
+          type: integer
+        totalApplications:
+          type: integer
+        recentPayments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Payment"
+        nextPaymentAmount:
+          type: integer
+        nextPaymentDate:
+          type: string
+      required: [tenantId, pendingApplications, totalApplications, recentPayments]

@@ -1,0 +1,20 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "6vP7xWvGqjAkl91QQ-TV6"
+uri = "file://artifacts/kvarenda/public/images/apt1.png"
+type = "image"
+title = "Modern living room in Tashkent"
+
+[[generated]]
+id = "h53olomwEPHCSwwGLbgSr"
+uri = "file://artifacts/kvarenda/public/images/apt2.png"
+type = "image"
+title = "Premium apartment kitchen"
+
+[[generated]]
+id = "GpzdULvRiKU9ofeUxHy9O"
+uri = "file://artifacts/kvarenda/public/images/apt3.png"
+type = "image"
+title = "Cozy modern bedroom"
