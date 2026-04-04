@@ -123,7 +123,7 @@ export function Listings() {
                         <SelectItem value="1">1 Room</SelectItem>
                         <SelectItem value="2">2 Rooms</SelectItem>
                         <SelectItem value="3">3 Rooms</SelectItem>
-                        <SelectItem value="4">4+ Rooms</SelectItem>
+                        <SelectItem value="4+">4+ Rooms</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

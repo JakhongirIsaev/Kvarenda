@@ -15,6 +15,7 @@ import { MyRentals } from "@/pages/my-rentals";
 import { OwnerDashboard } from "@/pages/owner-dashboard";
 import { OwnerListingForm } from "@/pages/owner-listing-form";
 import { ContractView } from "@/pages/contract-view";
+import { Admin } from "@/pages/admin";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ function Router() {
         <Route path="/owner" component={OwnerDashboard} />
         <Route path="/owner/listings/new" component={() => <OwnerListingForm />} />
         <Route path="/owner/listings/:id/edit" component={OwnerListingForm} />
+        <Route path="/admin" component={Admin} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
