@@ -13,6 +13,8 @@ Full-stack apartment rental platform (Zillow/Zumper-inspired) built for the Uzbe
 - **Tashkent districts** - Yunusobod, Mirzo Ulugbek, Chilonzor, Shaykhontohur, Yakkasaroy, Uchtepa, Olmazor, Sergeli
 - **Interactive map** - Leaflet/OpenStreetMap map with price markers on home page
 - **Mobile responsive** - Hamburger menu, stacked layouts for mobile viewports
+- **Multi-language (i18n)** - English, Russian (Русский), Uzbek (O'zbek) with language switcher in header
+- **Persistent language** - Language choice saved to localStorage
 
 ## Pages / Routes
 
@@ -66,7 +68,8 @@ Full-stack apartment rental platform (Zillow/Zumper-inspired) built for the Uzbe
 
 ## Layout Components
 
-- `Header` — Logo, nav links (role-aware), role dropdown, mobile hamburger menu
+- `Header` — Logo, nav links (role-aware), language switcher (EN/RU/UZ), role dropdown, mobile hamburger menu
+- `I18nProvider` — Context-based i18n with translations for all UI text in EN/RU/UZ
 - `Footer` — 4-column: branding, tenant links, owner links, contact info + copyright
 - `ListingMap` — Leaflet map with price-bubble markers and popup cards
 - `ListingCard` — Reusable listing card with trust badges, price overlay

@@ -9,11 +9,14 @@ import {
   getGetDashboardStatsQueryKey, getGetUsersQueryKey, getGetListingsQueryKey, getGetPaymentsQueryKey, getGetApplicationsQueryKey,
 } from "@workspace/api-client-react";
 import { useRole } from "@/lib/role-context";
+import { useI18n, useT } from "@/lib/i18n";
 import { formatUzs } from "@/lib/utils";
 import { motion } from "framer-motion";
 
 export function Admin() {
   const { role } = useRole();
+  const { t } = useI18n();
+  const { tr } = useT();
 
   const isAdmin = role === "admin";
   const { data: stats, isLoading: statsLoading } = useGetDashboardStats({ query: { queryKey: getGetDashboardStatsQueryKey(), enabled: isAdmin } });
@@ -31,8 +34,8 @@ export function Admin() {
     return (
       <div className="container mx-auto px-4 py-20 text-center">
         <Shield className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-        <p className="text-lg font-medium mb-2">Admin access required</p>
-        <p className="text-muted-foreground">Switch to Admin role to access this panel.</p>
+        <p className="text-lg font-medium mb-2">{tr(t.admin.accessRequired)}</p>
+        <p className="text-muted-foreground">{tr(t.admin.switchAdmin)}</p>
       </div>
     );
   }
@@ -41,8 +44,8 @@ export function Admin() {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold">Admin Panel</h1>
-          <p className="text-muted-foreground">Platform overview and management</p>
+          <h1 className="text-2xl font-bold">{tr(t.admin.title)}</h1>
+          <p className="text-muted-foreground">{tr(t.admin.overview)}</p>
         </div>
 
         {/* Stats Grid */}
@@ -53,11 +56,11 @@ export function Admin() {
         ) : stats && (
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
             {[
-              { label: "Total Users", value: stats.totalUsers, icon: Users, color: "text-blue-500", sub: `${stats.totalTenants} tenants · ${stats.totalOwners} owners` },
-              { label: "Active Listings", value: `${stats.activeListings}/${stats.totalListings}`, icon: Building, color: "text-green-500", sub: `${stats.proListingsCount} pro` },
-              { label: "Active Rentals", value: stats.activeRentals, icon: CheckCircle2, color: "text-emerald-500", sub: "Currently active" },
-              { label: "Pending Apps", value: stats.pendingApplications, icon: Clock, color: "text-yellow-500", sub: "Awaiting review" },
-              { label: "Revenue", value: formatUzs(stats.totalRevenueUzs), icon: DollarSign, color: "text-primary", sub: `${formatUzs(stats.monthlyRevenueUzs)} this month` },
+              { label: tr(t.admin.totalUsers), value: stats.totalUsers, icon: Users, color: "text-blue-500", sub: `${stats.totalTenants} · ${stats.totalOwners}` },
+              { label: tr(t.admin.activeListings), value: `${stats.activeListings}/${stats.totalListings}`, icon: Building, color: "text-green-500", sub: `${stats.proListingsCount} pro` },
+              { label: tr(t.admin.activeRentals), value: stats.activeRentals, icon: CheckCircle2, color: "text-emerald-500", sub: "" },
+              { label: tr(t.admin.pendingApps), value: stats.pendingApplications, icon: Clock, color: "text-yellow-500", sub: "" },
+              { label: tr(t.admin.revenue), value: formatUzs(stats.totalRevenueUzs), icon: DollarSign, color: "text-primary", sub: formatUzs(stats.monthlyRevenueUzs) },
             ].map((stat, i) => (
               <motion.div
                 key={stat.label}
@@ -77,10 +80,10 @@ export function Admin() {
 
         <Tabs defaultValue="users">
           <TabsList className="mb-6">
-            <TabsTrigger value="users" data-testid="tab-users">Users ({users.length})</TabsTrigger>
-            <TabsTrigger value="listings" data-testid="tab-listings">Listings ({listings.length})</TabsTrigger>
-            <TabsTrigger value="applications" data-testid="tab-applications">Applications ({applications.length})</TabsTrigger>
-            <TabsTrigger value="payments" data-testid="tab-payments">Payments ({payments.length})</TabsTrigger>
+            <TabsTrigger value="users" data-testid="tab-users">{tr(t.admin.users)} ({users.length})</TabsTrigger>
+            <TabsTrigger value="listings" data-testid="tab-listings">{tr(t.listings.listingsCount)} ({listings.length})</TabsTrigger>
+            <TabsTrigger value="applications" data-testid="tab-applications">{tr(t.nav.applications)} ({applications.length})</TabsTrigger>
+            <TabsTrigger value="payments" data-testid="tab-payments">{tr(t.admin.payments)} ({payments.length})</TabsTrigger>
           </TabsList>
 
           {/* Users */}

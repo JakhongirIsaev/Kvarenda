@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLocation, Link } from "wouter";
 import { Search, SlidersHorizontal, X, MapPin, Bed, Maximize } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,11 +11,14 @@ import { useGetListings } from "@workspace/api-client-react";
 import { ListingCard } from "@/components/shared/listing-card";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatUzs } from "@/lib/utils";
+import { useI18n, useT } from "@/lib/i18n";
 
 const DISTRICTS = ["Yunusobod", "Mirzo Ulugbek", "Chilonzor", "Shaykhontohur", "Yakkasaroy", "Uchtepa", "Olmazor", "Sergeli"];
 
 export function Listings() {
   const [location] = useLocation();
+  const { t } = useI18n();
+  const { tr } = useT();
   const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
 
   const [district, setDistrict] = useState(params.get("district") || "");
@@ -54,7 +57,7 @@ export function Listings() {
             data-testid="button-toggle-filters"
           >
             <SlidersHorizontal className="w-4 h-4" />
-            Filters
+            {tr(t.listings.filters)}
             {(district || rooms || verified || has3dTour || hasInsurance) && (
               <Badge className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-xs">!</Badge>
             )}
@@ -79,7 +82,7 @@ export function Listings() {
           </div>
 
           <div className="ml-auto text-sm text-muted-foreground">
-            {isLoading ? "Loading..." : `${total} listings`}
+            {isLoading ? tr(t.listings.loading) : `${total} ${tr(t.listings.listingsCount)}`}
           </div>
         </div>
       </div>
@@ -95,16 +98,16 @@ export function Listings() {
                 className="w-72 flex-shrink-0"
               >
                 <div className="bg-card border border-border rounded-xl p-5 sticky top-36 space-y-6">
-                  <h3 className="font-semibold text-foreground">Filters</h3>
+                  <h3 className="font-semibold text-foreground">{tr(t.listings.filters)}</h3>
 
                   <div>
-                    <Label className="text-sm font-medium mb-2 block">District</Label>
+                    <Label className="text-sm font-medium mb-2 block">{tr(t.listings.district)}</Label>
                     <Select value={district} onValueChange={setDistrict}>
                       <SelectTrigger data-testid="select-district">
-                        <SelectValue placeholder="Any district" />
+                        <SelectValue placeholder={tr(t.home.anyDistrict)} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="any">Any district</SelectItem>
+                        <SelectItem value="any">{tr(t.home.anyDistrict)}</SelectItem>
                         {DISTRICTS.map(d => (
                           <SelectItem key={d} value={d}>{d}</SelectItem>
                         ))}
@@ -113,24 +116,24 @@ export function Listings() {
                   </div>
 
                   <div>
-                    <Label className="text-sm font-medium mb-2 block">Rooms</Label>
+                    <Label className="text-sm font-medium mb-2 block">{tr(t.home.rooms)}</Label>
                     <Select value={rooms} onValueChange={setRooms}>
                       <SelectTrigger data-testid="select-rooms">
-                        <SelectValue placeholder="Any" />
+                        <SelectValue placeholder={tr(t.home.anyRooms)} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="any">Any</SelectItem>
-                        <SelectItem value="1">1 Room</SelectItem>
-                        <SelectItem value="2">2 Rooms</SelectItem>
-                        <SelectItem value="3">3 Rooms</SelectItem>
-                        <SelectItem value="4+">4+ Rooms</SelectItem>
+                        <SelectItem value="any">{tr(t.home.anyRooms)}</SelectItem>
+                        <SelectItem value="1">1 {tr(t.home.room)}</SelectItem>
+                        <SelectItem value="2">2 {tr(t.home.roomPlural)}</SelectItem>
+                        <SelectItem value="3">3 {tr(t.home.roomPlural)}</SelectItem>
+                        <SelectItem value="4+">4+ {tr(t.home.roomPlural)}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div>
                     <Label className="text-sm font-medium mb-3 block">
-                      Price: {formatUzs(priceRange[0])} — {formatUzs(priceRange[1])}
+                      {tr(t.listings.price)}: {formatUzs(priceRange[0])} — {formatUzs(priceRange[1])}
                     </Label>
                     <Slider
                       min={0}
@@ -144,7 +147,7 @@ export function Listings() {
                   </div>
 
                   <div className="space-y-3">
-                    <Label className="text-sm font-medium block">Features</Label>
+                    <Label className="text-sm font-medium block">{tr(t.listings.features)}</Label>
                     <div className="flex items-center gap-2">
                       <Checkbox
                         id="verified"
@@ -152,7 +155,7 @@ export function Listings() {
                         onCheckedChange={(v) => setVerified(v === true)}
                         data-testid="checkbox-verified"
                       />
-                      <label htmlFor="verified" className="text-sm cursor-pointer">Verified Owner</label>
+                      <label htmlFor="verified" className="text-sm cursor-pointer">{tr(t.listings.verified)}</label>
                     </div>
                     <div className="flex items-center gap-2">
                       <Checkbox
@@ -161,7 +164,7 @@ export function Listings() {
                         onCheckedChange={(v) => setHas3dTour(v === true)}
                         data-testid="checkbox-3dtour"
                       />
-                      <label htmlFor="tour" className="text-sm cursor-pointer">3D Tour</label>
+                      <label htmlFor="tour" className="text-sm cursor-pointer">{tr(t.badges.tour3d)}</label>
                     </div>
                     <div className="flex items-center gap-2">
                       <Checkbox
@@ -170,7 +173,7 @@ export function Listings() {
                         onCheckedChange={(v) => setHasInsurance(v === true)}
                         data-testid="checkbox-insurance"
                       />
-                      <label htmlFor="insurance" className="text-sm cursor-pointer">Insurance</label>
+                      <label htmlFor="insurance" className="text-sm cursor-pointer">{tr(t.badges.insurance)}</label>
                     </div>
                   </div>
 
@@ -188,7 +191,7 @@ export function Listings() {
                     }}
                     data-testid="button-clear-filters"
                   >
-                    Clear all filters
+                    {tr(t.listings.clearFilters)}
                   </Button>
                 </div>
               </motion.div>
@@ -198,9 +201,9 @@ export function Listings() {
           <div className="flex-1">
             <div className="mb-4">
               <h1 className="text-2xl font-bold text-foreground">
-                {district && district !== "any" ? `Apartments in ${district}` : "All listings in Tashkent"}
+                {district && district !== "any" ? `${tr(t.listings.apartmentsIn)} ${district}` : tr(t.listings.allListings)}
               </h1>
-              <p className="text-muted-foreground text-sm mt-1">{total} apartments available</p>
+              <p className="text-muted-foreground text-sm mt-1">{total} {tr(t.listings.available)}</p>
             </div>
 
             {isLoading ? (
@@ -211,8 +214,8 @@ export function Listings() {
               </div>
             ) : listings.length === 0 ? (
               <div className="text-center py-20 text-muted-foreground">
-                <p className="text-lg font-medium">No listings found</p>
-                <p className="text-sm mt-2">Try adjusting your filters</p>
+                <p className="text-lg font-medium">{tr(t.listings.noListings)}</p>
+                <p className="text-sm mt-2">{tr(t.listings.tryFilters)}</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">

@@ -1,5 +1,6 @@
 import { Layout } from "@/components/layout/layout";
 import { RoleProvider } from "@/lib/role-context";
+import { I18nProvider } from "@/lib/i18n";
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -43,14 +44,16 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <RoleProvider>
-        <TooltipProvider>
-          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-            <Router />
-          </WouterRouter>
-          <Toaster />
-        </TooltipProvider>
-      </RoleProvider>
+      <I18nProvider>
+        <RoleProvider>
+          <TooltipProvider>
+            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+              <Router />
+            </WouterRouter>
+            <Toaster />
+          </TooltipProvider>
+        </RoleProvider>
+      </I18nProvider>
     </QueryClientProvider>
   );
 }

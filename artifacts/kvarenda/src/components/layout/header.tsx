@@ -1,22 +1,27 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useRole } from "@/lib/role-context";
+import { useI18n, useT, Language } from "@/lib/i18n";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Shield } from "lucide-react";
+import { Menu, X, Shield, Globe } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+
+const LANG_LABELS: Record<Language, string> = { en: "EN", ru: "RU", uz: "UZ" };
 
 export function Header() {
   const { role, setRole } = useRole();
+  const { lang, setLang, t } = useI18n();
+  const { tr } = useT();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [location] = useLocation();
 
   const navLinks = [
-    { href: "/listings", label: "Search", show: true },
-    { href: "/my/applications", label: "Applications", show: role === "tenant" },
-    { href: "/my/rental", label: "My Rental", show: role === "tenant" },
-    { href: "/owner", label: "Dashboard", show: role === "owner" },
-    { href: "/admin", label: "Admin Panel", show: role === "admin" },
+    { href: "/listings", label: tr(t.nav.search), show: true },
+    { href: "/my/applications", label: tr(t.nav.applications), show: role === "tenant" },
+    { href: "/my/rental", label: tr(t.nav.myRental), show: role === "tenant" },
+    { href: "/owner", label: tr(t.nav.dashboard), show: role === "owner" },
+    { href: "/admin", label: tr(t.nav.adminPanel), show: role === "admin" },
   ].filter(l => l.show);
 
   return (
@@ -43,27 +48,29 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2 md:gap-4">
-          <Select value={role} onValueChange={(val: any) => setRole(val)}>
-            <SelectTrigger className="w-[110px] md:w-[120px] h-8 text-xs md:text-sm">
-              <SelectValue placeholder="Select role" />
+        <div className="flex items-center gap-2">
+          <Select value={lang} onValueChange={(val) => setLang(val as Language)}>
+            <SelectTrigger className="w-[70px] h-8 text-xs gap-1">
+              <Globe className="w-3.5 h-3.5" />
+              <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="tenant">Tenant</SelectItem>
-              <SelectItem value="owner">Owner</SelectItem>
-              <SelectItem value="admin">Admin</SelectItem>
+              <SelectItem value="en">EN</SelectItem>
+              <SelectItem value="ru">RU</SelectItem>
+              <SelectItem value="uz">UZ</SelectItem>
             </SelectContent>
           </Select>
 
-          <div className="hidden md:block">
-            <Link href="/profile">
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-semibold text-sm">
-                  {role.charAt(0).toUpperCase()}
-                </div>
-              </Button>
-            </Link>
-          </div>
+          <Select value={role} onValueChange={(val: any) => setRole(val)}>
+            <SelectTrigger className="w-[100px] md:w-[110px] h-8 text-xs md:text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="tenant">{tr(t.nav.tenant)}</SelectItem>
+              <SelectItem value="owner">{tr(t.nav.owner)}</SelectItem>
+              <SelectItem value="admin">{tr(t.nav.admin)}</SelectItem>
+            </SelectContent>
+          </Select>
 
           <Button
             variant="ghost"

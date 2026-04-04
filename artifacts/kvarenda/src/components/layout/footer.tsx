@@ -1,7 +1,11 @@
 import { Link } from "wouter";
 import { Shield, MapPin, Phone, Mail } from "lucide-react";
+import { useI18n, useT } from "@/lib/i18n";
 
 export function Footer() {
+  const { t } = useI18n();
+  const { tr } = useT();
+
   return (
     <footer className="bg-foreground text-background/80 mt-auto">
       <div className="container mx-auto px-4 py-12">
@@ -12,32 +16,32 @@ export function Footer() {
               <span className="text-xl font-bold text-background">Kvarenda</span>
             </Link>
             <p className="text-sm text-background/60 leading-relaxed">
-              Tashkent's most trusted apartment rental platform. Verified owners, protected rent, transparent pricing.
+              {tr(t.footer.tagline)}
             </p>
           </div>
 
           <div>
-            <h4 className="font-semibold text-background mb-4">For Tenants</h4>
+            <h4 className="font-semibold text-background mb-4">{tr(t.footer.forTenants)}</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/listings" className="hover:text-background transition-colors">Browse Apartments</Link></li>
-              <li><Link href="/my/applications" className="hover:text-background transition-colors">My Applications</Link></li>
-              <li><Link href="/my/rental" className="hover:text-background transition-colors">My Rental</Link></li>
-              <li><span className="text-background/40">Rent Protection</span></li>
+              <li><Link href="/listings" className="hover:text-background transition-colors">{tr(t.footer.browseApartments)}</Link></li>
+              <li><Link href="/my/applications" className="hover:text-background transition-colors">{tr(t.footer.myApplications)}</Link></li>
+              <li><Link href="/my/rental" className="hover:text-background transition-colors">{tr(t.footer.myRental)}</Link></li>
+              <li><span className="text-background/40">{tr(t.footer.rentProtection)}</span></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-semibold text-background mb-4">For Owners</h4>
+            <h4 className="font-semibold text-background mb-4">{tr(t.footer.forOwners)}</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/owner" className="hover:text-background transition-colors">Owner Dashboard</Link></li>
-              <li><Link href="/owner/listings/new" className="hover:text-background transition-colors">List Your Property</Link></li>
-              <li><span className="text-background/40">Verification Program</span></li>
-              <li><span className="text-background/40">Pro Listings</span></li>
+              <li><Link href="/owner" className="hover:text-background transition-colors">{tr(t.footer.ownerDashboard)}</Link></li>
+              <li><Link href="/owner/listings/new" className="hover:text-background transition-colors">{tr(t.footer.listProperty)}</Link></li>
+              <li><span className="text-background/40">{tr(t.footer.verificationProgram)}</span></li>
+              <li><span className="text-background/40">{tr(t.footer.proListings)}</span></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-semibold text-background mb-4">Contact</h4>
+            <h4 className="font-semibold text-background mb-4">{tr(t.footer.contact)}</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 flex-shrink-0" />
@@ -56,13 +60,13 @@ export function Footer() {
         </div>
 
         <div className="border-t border-background/10 mt-10 pt-6 flex flex-col md:flex-row items-center justify-between text-sm text-background/40">
-          <p>&copy; {new Date().getFullYear()} Kvarenda. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Kvarenda. {tr(t.footer.rights)}</p>
           <div className="flex items-center gap-1 mt-2 md:mt-0">
-            <span>5% flat service fee</span>
-            <span className="mx-2">·</span>
-            <span>No hidden costs</span>
-            <span className="mx-2">·</span>
-            <span>Verified owners only</span>
+            <span>{tr(t.footer.flatFee)}</span>
+            <span className="mx-2">&middot;</span>
+            <span>{tr(t.footer.noHidden)}</span>
+            <span className="mx-2">&middot;</span>
+            <span>{tr(t.footer.verifiedOnly)}</span>
           </div>
         </div>
       </div>
