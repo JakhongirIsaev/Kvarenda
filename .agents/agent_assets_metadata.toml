@@ -1,5 +1,4 @@
 uploads = []
-outputs = []
 
 [[generated]]
 id = "6vP7xWvGqjAkl91QQ-TV6"
@@ -18,3 +17,9 @@ id = "GpzdULvRiKU9ofeUxHy9O"
 uri = "file://artifacts/kvarenda/public/images/apt3.png"
 type = "image"
 title = "Cozy modern bedroom"
+
+[[outputs]]
+id = "r4nzGpkXGhkC5aN7A3Peo"
+uri = "file://Kvarenda_Guide_RU.docx"
+type = "word_document"
+title = "Kvarenda - Руководство пользователя (RU)"

@@ -56,13 +56,13 @@ export function OwnerDashboard() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-5xl">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
           <div>
             <h1 className="text-2xl font-bold">{tr(t.owner.title)}</h1>
             <p className="text-muted-foreground">{tr(t.owner.subtitle)}</p>
           </div>
           <Link href="/owner/listings/new">
-            <Button className="gap-2" data-testid="button-new-listing">
+            <Button className="gap-2 w-full sm:w-auto" data-testid="button-new-listing">
               <Plus className="w-4 h-4" />
               {tr(t.owner.addListing)}
             </Button>
@@ -74,7 +74,7 @@ export function OwnerDashboard() {
             {[1, 2, 3, 4].map(i => <div key={i} className="h-24 bg-muted animate-pulse rounded-xl" />)}
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8">
             {[
               { label: tr(t.owner.activeListings), value: dashboard?.activeListings ?? 0, icon: Building },
               { label: tr(t.owner.totalApps), value: dashboard?.totalApplications ?? 0, icon: Users },
@@ -85,29 +85,31 @@ export function OwnerDashboard() {
                 key={stat.label}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-card border border-border rounded-xl p-4"
+                className="bg-card border border-border rounded-xl p-3 sm:p-4"
               >
                 <stat.icon className="w-5 h-5 text-primary mb-2" />
-                <p className="text-xl font-bold text-foreground">{stat.value}</p>
-                <p className="text-xs text-muted-foreground">{stat.label}</p>
+                <p className="text-base sm:text-xl font-bold text-foreground break-all">{stat.value}</p>
+                <p className="text-xs text-muted-foreground leading-tight">{stat.label}</p>
               </motion.div>
             ))}
           </div>
         )}
 
         <Tabs defaultValue="listings">
-          <TabsList className="mb-6">
-            <TabsTrigger value="listings" data-testid="tab-listings">{tr(t.owner.listings)}</TabsTrigger>
-            <TabsTrigger value="applications" data-testid="tab-applications">
-              {tr(t.owner.totalApps)}
-              {(dashboard?.pendingApplications ?? 0) > 0 && (
-                <Badge className="ml-2 h-5 w-5 p-0 flex items-center justify-center text-xs">
-                  {dashboard?.pendingApplications}
-                </Badge>
-              )}
-            </TabsTrigger>
-            <TabsTrigger value="rentals" data-testid="tab-rentals">{tr(t.owner.rentals)}</TabsTrigger>
-          </TabsList>
+          <div className="overflow-x-auto -mx-4 px-4 mb-6">
+            <TabsList className="w-max min-w-full sm:w-auto">
+              <TabsTrigger value="listings" data-testid="tab-listings" className="text-xs sm:text-sm">{tr(t.owner.listings)}</TabsTrigger>
+              <TabsTrigger value="applications" data-testid="tab-applications" className="text-xs sm:text-sm">
+                {tr(t.owner.totalApps)}
+                {(dashboard?.pendingApplications ?? 0) > 0 && (
+                  <Badge className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                    {dashboard?.pendingApplications}
+                  </Badge>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="rentals" data-testid="tab-rentals" className="text-xs sm:text-sm">{tr(t.owner.rentals)}</TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="listings">
             {listings.length === 0 ? (
@@ -122,24 +124,28 @@ export function OwnerDashboard() {
             ) : (
               <div className="space-y-3">
                 {listings.map((listing) => (
-                  <div key={listing.id} className="bg-card border border-border rounded-xl p-4 flex items-center gap-4" data-testid={`row-listing-${listing.id}`}>
-                    {listing.photos?.[0] && (
-                      <img src={listing.photos[0]} alt="" className="w-16 h-12 object-cover rounded-lg flex-shrink-0" />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-foreground truncate">{listing.title}</p>
-                      <p className="text-sm text-muted-foreground">{listing.district} · {formatUzs(listing.priceUzs)}{tr(t.common.perMonth)}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className={listing.status === "active" ? "text-green-700 border-green-200" : "text-gray-600 border-gray-200"}>
-                        {listing.status}
-                      </Badge>
-                      <Link href={`/listings/${listing.id}`}>
-                        <Button size="sm" variant="ghost" className="h-8">{tr(t.common.view)}</Button>
-                      </Link>
-                      <Link href={`/owner/listings/${listing.id}/edit`}>
-                        <Button size="sm" variant="outline" className="h-8">{tr(t.common.edit)}</Button>
-                      </Link>
+                  <div key={listing.id} className="bg-card border border-border rounded-xl p-4" data-testid={`row-listing-${listing.id}`}>
+                    <div className="flex items-start gap-3">
+                      {listing.photos?.[0] && (
+                        <img src={listing.photos[0]} alt="" className="w-16 h-12 object-cover rounded-lg flex-shrink-0" />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap mb-1">
+                          <p className="font-medium text-foreground truncate">{listing.district}</p>
+                          <Badge variant="outline" className={`text-xs ${listing.status === "active" ? "text-green-700 border-green-200" : "text-gray-600 border-gray-200"}`}>
+                            {listing.status}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-primary font-semibold">{formatUzs(listing.priceUzs)}{tr(t.common.perMonth)}</p>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <Link href={`/listings/${listing.id}`}>
+                          <Button size="sm" variant="ghost" className="h-8 px-2 sm:px-3">{tr(t.common.view)}</Button>
+                        </Link>
+                        <Link href={`/owner/listings/${listing.id}/edit`}>
+                          <Button size="sm" variant="outline" className="h-8 px-2 sm:px-3">{tr(t.common.edit)}</Button>
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -156,8 +162,8 @@ export function OwnerDashboard() {
               <div className="space-y-3">
                 {applications.map((app) => (
                   <div key={app.id} className="bg-card border border-border rounded-xl p-4" data-testid={`row-app-${app.id}`}>
-                    <div className="flex items-start justify-between">
-                      <div>
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                      <div className="min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <Badge variant="outline" className={
                             app.status === "pending" ? "bg-yellow-50 text-yellow-700 border-yellow-200" :
@@ -168,7 +174,7 @@ export function OwnerDashboard() {
                           </Badge>
                         </div>
                         <p className="font-medium">{app.tenantName}</p>
-                        <p className="text-sm text-muted-foreground">{app.listingTitle}</p>
+                        <p className="text-sm text-muted-foreground truncate">{app.listingTitle}</p>
                         <p className="text-xs text-muted-foreground mt-1">
                           {tr(t.myApps.moveIn)}: {app.moveInDate} · {app.durationMonths} {tr(t.myApps.months)}
                         </p>
@@ -215,17 +221,17 @@ export function OwnerDashboard() {
               <div className="space-y-3">
                 {rentals.map((rental) => (
                   <div key={rental.id} className="bg-card border border-border rounded-xl p-4" data-testid={`row-rental-${rental.id}`}>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">{rental.listingTitle}</p>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="font-medium truncate">{rental.listingTitle}</p>
                         <p className="text-sm text-muted-foreground">{tr(t.owner.tenant)}: {rental.tenantName}</p>
                         <p className="text-xs text-muted-foreground mt-1">
                           {rental.startDate} → {rental.endDate}
                         </p>
                       </div>
-                      <div className="text-right">
-                        <p className="font-bold text-primary">{formatUzs(rental.monthlyRentUzs)}{tr(t.common.perMonth)}</p>
-                        <Badge variant="outline" className="text-green-700 border-green-200 mt-1">{tr(t.rental.active)}</Badge>
+                      <div className="sm:text-right flex items-center sm:flex-col gap-2 sm:gap-0 flex-shrink-0">
+                        <p className="font-bold text-primary text-sm sm:text-base">{formatUzs(rental.monthlyRentUzs)}{tr(t.common.perMonth)}</p>
+                        <Badge variant="outline" className="text-green-700 border-green-200 sm:mt-1">{tr(t.rental.active)}</Badge>
                       </div>
                     </div>
                   </div>

@@ -53,7 +53,7 @@ export function Admin() {
             {[1, 2, 3, 4, 5].map(i => <div key={i} className="h-28 bg-muted animate-pulse rounded-xl" />)}
           </div>
         ) : stats && (
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4 mb-8">
             {[
               { label: tr(t.admin.totalUsers), value: stats.totalUsers, icon: Users, color: "text-blue-500", sub: `${stats.totalTenants} · ${stats.totalOwners}` },
               { label: tr(t.admin.activeListings), value: `${stats.activeListings}/${stats.totalListings}`, icon: Building, color: "text-green-500", sub: `${stats.proListingsCount} pro` },
@@ -66,24 +66,26 @@ export function Admin() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className="bg-card border border-border rounded-xl p-4"
+                className="bg-card border border-border rounded-xl p-3 sm:p-4"
               >
                 <stat.icon className={`w-5 h-5 ${stat.color} mb-2`} />
-                <p className="text-lg font-bold text-foreground">{stat.value}</p>
-                <p className="text-xs text-muted-foreground">{stat.label}</p>
-                <p className="text-xs text-muted-foreground/60 mt-1">{stat.sub}</p>
+                <p className="text-sm sm:text-lg font-bold text-foreground break-all">{stat.value}</p>
+                <p className="text-xs text-muted-foreground leading-tight">{stat.label}</p>
+                {stat.sub && <p className="text-xs text-muted-foreground/60 mt-1">{stat.sub}</p>}
               </motion.div>
             ))}
           </div>
         )}
 
         <Tabs defaultValue="users">
-          <TabsList className="mb-6">
-            <TabsTrigger value="users" data-testid="tab-users">{tr(t.admin.users)} ({users.length})</TabsTrigger>
-            <TabsTrigger value="listings" data-testid="tab-listings">{tr(t.listings.listingsCount)} ({listings.length})</TabsTrigger>
-            <TabsTrigger value="applications" data-testid="tab-applications">{tr(t.nav.applications)} ({applications.length})</TabsTrigger>
-            <TabsTrigger value="payments" data-testid="tab-payments">{tr(t.admin.payments)} ({payments.length})</TabsTrigger>
-          </TabsList>
+          <div className="overflow-x-auto -mx-4 px-4 mb-6">
+            <TabsList className="w-max min-w-full sm:w-auto">
+              <TabsTrigger value="users" data-testid="tab-users" className="text-xs sm:text-sm">{tr(t.admin.users)} ({users.length})</TabsTrigger>
+              <TabsTrigger value="listings" data-testid="tab-listings" className="text-xs sm:text-sm">{tr(t.listings.listingsCount)} ({listings.length})</TabsTrigger>
+              <TabsTrigger value="applications" data-testid="tab-applications" className="text-xs sm:text-sm">{tr(t.nav.applications)} ({applications.length})</TabsTrigger>
+              <TabsTrigger value="payments" data-testid="tab-payments" className="text-xs sm:text-sm">{tr(t.admin.payments)} ({payments.length})</TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="users">
             <div className="bg-card border border-border rounded-xl overflow-hidden">
