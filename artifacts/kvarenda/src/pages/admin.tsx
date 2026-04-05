@@ -10,7 +10,7 @@ import {
 } from "@workspace/api-client-react";
 import { useRole } from "@/lib/role-context";
 import { useI18n, useT } from "@/lib/i18n";
-import { formatUzs } from "@/lib/utils";
+import { formatUzs, formatDate } from "@/lib/utils";
 import { motion } from "framer-motion";
 
 export function Admin() {
@@ -214,7 +214,7 @@ export function Admin() {
                             {app.status}
                           </Badge>
                         </td>
-                        <td className="px-4 py-3 text-muted-foreground text-xs">{new Date(app.createdAt).toLocaleDateString()}</td>
+                        <td className="px-4 py-3 text-muted-foreground text-xs">{formatDate(app.createdAt)}</td>
                       </tr>
                     ))}
                   </tbody>

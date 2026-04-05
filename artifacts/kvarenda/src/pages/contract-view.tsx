@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { useGetContract, useSignContract } from "@workspace/api-client-react";
 import { useRole } from "@/lib/role-context";
 import { useToast } from "@/hooks/use-toast";
-import { formatUzs } from "@/lib/utils";
+import { formatUzs, formatDate } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useI18n, useT } from "@/lib/i18n";
 
@@ -167,7 +167,7 @@ export function ContractView() {
                     <div>
                       <p className="text-sm font-medium">{tr(t.contract.signed)}</p>
                       {contract.ownerSignedAt && (
-                        <p className="text-xs text-muted-foreground">{new Date(contract.ownerSignedAt).toLocaleDateString()}</p>
+                        <p className="text-xs text-muted-foreground">{formatDate(contract.ownerSignedAt)}</p>
                       )}
                     </div>
                   </div>
@@ -197,7 +197,7 @@ export function ContractView() {
                     <div>
                       <p className="text-sm font-medium">{tr(t.contract.signed)}</p>
                       {contract.tenantSignedAt && (
-                        <p className="text-xs text-muted-foreground">{new Date(contract.tenantSignedAt).toLocaleDateString()}</p>
+                        <p className="text-xs text-muted-foreground">{formatDate(contract.tenantSignedAt)}</p>
                       )}
                     </div>
                   </div>

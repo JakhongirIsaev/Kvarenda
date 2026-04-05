@@ -1,3 +1,5 @@
+process.env.TZ = "Asia/Tashkent";
+
 import app from "./app";
 import { logger } from "./lib/logger";
 
