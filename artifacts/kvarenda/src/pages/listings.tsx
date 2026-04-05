@@ -71,12 +71,12 @@ export function Listings() {
             )}
             {rooms && rooms !== "any" && (
               <Badge variant="secondary" className="gap-1 cursor-pointer" onClick={() => setRooms("")}>
-                {rooms} rooms <X className="w-3 h-3" />
+                {rooms} {tr(t.home.roomPlural)} <X className="w-3 h-3" />
               </Badge>
             )}
             {verified && (
               <Badge variant="secondary" className="gap-1 cursor-pointer" onClick={() => setVerified(false)}>
-                Verified <X className="w-3 h-3" />
+                {tr(t.listings.verified)} <X className="w-3 h-3" />
               </Badge>
             )}
           </div>

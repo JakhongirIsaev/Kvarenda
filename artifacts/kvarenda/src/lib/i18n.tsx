@@ -374,6 +374,7 @@ const translations = {
     listedBy: { en: "Listed by", ru: "Разместил(а)", uz: "E'lon beruvchi" },
     room: { en: "room", ru: "комната", uz: "xona" },
     rooms: { en: "rooms", ru: "комнат", uz: "xona" },
+    owner: { en: "Owner", ru: "Владелец", uz: "Uy egasi" },
   },
   map: {
     view: { en: "View", ru: "Смотреть", uz: "Ko'rish" },

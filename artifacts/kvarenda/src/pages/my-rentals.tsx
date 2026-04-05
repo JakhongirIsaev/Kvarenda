@@ -86,16 +86,16 @@ export function MyRentals() {
               animate={{ opacity: 1, y: 0 }}
               className="bg-card border border-border rounded-2xl overflow-hidden"
             >
-              <div className="bg-primary/5 border-b border-border p-5 flex items-center justify-between">
-                <div>
+              <div className="bg-primary/5 border-b border-border p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <Badge className="bg-green-500 text-white border-0">{tr(t.rental.active)}</Badge>
                   </div>
-                  <h2 className="font-semibold text-foreground text-lg">{rental.listingTitle}</h2>
+                  <h2 className="font-semibold text-foreground text-lg truncate">{rental.listingTitle}</h2>
                   <p className="text-muted-foreground text-sm">{rental.district}</p>
                 </div>
-                <div className="text-right">
-                  <p className="text-2xl font-bold text-primary">{formatUzs(rental.monthlyRentUzs + rental.serviceFeeUzs)}</p>
+                <div className="sm:text-right flex-shrink-0">
+                  <p className="text-xl sm:text-2xl font-bold text-primary">{formatUzs(rental.monthlyRentUzs + rental.serviceFeeUzs)}</p>
                   <p className="text-sm text-muted-foreground">{tr(t.rental.perMonth)}</p>
                 </div>
               </div>
@@ -116,19 +116,19 @@ export function MyRentals() {
             </motion.div>
 
             {dashboard?.nextPaymentDate && (
-              <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 flex items-center justify-between">
+              <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <Calendar className="w-5 h-5 text-primary" />
+                  <Calendar className="w-5 h-5 text-primary flex-shrink-0" />
                   <div>
                     <p className="text-sm font-medium">{tr(t.rental.nextPayment)}</p>
                     <p className="text-xs text-muted-foreground">{dashboard.nextPaymentDate}</p>
                   </div>
                 </div>
-                <div className="text-right">
+                <div className="sm:text-right flex items-center sm:flex-col gap-3 sm:gap-0">
                   <p className="font-bold text-primary">{formatUzs(dashboard.nextPaymentAmount ?? 0)}</p>
                   <Button
                     size="sm"
-                    className="mt-1 h-8 text-xs"
+                    className="sm:mt-1 h-8 text-xs"
                     disabled={paying}
                     onClick={() => handlePay(dashboard.nextPaymentDate!, rental.monthlyRentUzs)}
                     data-testid="button-pay-next"
@@ -139,20 +139,20 @@ export function MyRentals() {
               </div>
             )}
 
-            <div className="grid grid-cols-3 gap-4">
-              <div className="bg-card border border-border rounded-xl p-4">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4">
+              <div className="bg-card border border-border rounded-xl p-3 sm:p-4">
                 <CheckCircle2 className="w-5 h-5 text-green-500 mb-2" />
-                <p className="text-lg font-bold text-foreground">{formatUzs(rental.totalPaid ?? 0)}</p>
+                <p className="text-sm sm:text-lg font-bold text-foreground break-all">{formatUzs(rental.totalPaid ?? 0)}</p>
                 <p className="text-xs text-muted-foreground">{tr(t.rental.totalPaid)}</p>
               </div>
-              <div className="bg-card border border-border rounded-xl p-4">
+              <div className="bg-card border border-border rounded-xl p-3 sm:p-4">
                 <Clock className="w-5 h-5 text-yellow-500 mb-2" />
-                <p className="text-lg font-bold text-foreground">{rental.paymentsCount ?? 0}</p>
+                <p className="text-sm sm:text-lg font-bold text-foreground">{rental.paymentsCount ?? 0}</p>
                 <p className="text-xs text-muted-foreground">{tr(t.rental.paymentsMade)}</p>
               </div>
-              <div className="bg-card border border-border rounded-xl p-4">
+              <div className="bg-card border border-border rounded-xl p-3 sm:p-4">
                 <Home className="w-5 h-5 text-primary mb-2" />
-                <p className="text-lg font-bold text-foreground">{rental.protectedRent ? tr(t.rental.active) : tr(t.rental.none)}</p>
+                <p className="text-sm sm:text-lg font-bold text-foreground">{rental.protectedRent ? tr(t.rental.active) : tr(t.rental.none)}</p>
                 <p className="text-xs text-muted-foreground">{tr(t.rental.rentProtection)}</p>
               </div>
             </div>

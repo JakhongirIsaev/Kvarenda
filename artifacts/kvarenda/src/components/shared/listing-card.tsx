@@ -53,7 +53,7 @@ export function ListingCard({ listing }: { listing: Listing }) {
           </div>
         </CardContent>
         <CardFooter className="p-4 pt-0 text-xs text-muted-foreground border-t border-border/10 mt-auto">
-          {tr(t.card.listedBy)} {listing.ownerName || "Owner"}
+          {tr(t.card.listedBy)} {listing.ownerName || tr(t.card.owner)}
         </CardFooter>
       </Card>
     </Link>

@@ -52,9 +52,9 @@ export function MyApplications() {
                   className="bg-card border border-border rounded-xl p-5"
                   data-testid={`card-application-${app.id}`}
                 >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
                         <Badge variant="outline" className={config.className}>{config.label}</Badge>
                         {app.status === "approved" && (
                           <Link href={`/my/contract/${app.id}`}>
@@ -64,10 +64,10 @@ export function MyApplications() {
                           </Link>
                         )}
                       </div>
-                      <h3 className="font-semibold text-foreground">{app.listingTitle}</h3>
+                      <h3 className="font-semibold text-foreground truncate">{app.listingTitle}</h3>
                     </div>
                     {app.priceUzs && (
-                      <p className="text-primary font-bold ml-4">{formatUzs(Math.round(app.priceUzs * 1.05))}{tr(t.common.perMonth)}</p>
+                      <p className="text-primary font-bold text-sm sm:text-base sm:text-right flex-shrink-0">{formatUzs(Math.round(app.priceUzs * 1.05))}{tr(t.common.perMonth)}</p>
                     )}
                   </div>
 
