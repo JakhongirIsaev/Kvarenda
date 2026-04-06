@@ -10,9 +10,10 @@ COPY . .
 # Install dependencies
 RUN pnpm install --no-frozen-lockfile
 
-# Build all packages (skip typecheck for deploy speed)
+# Build only what's needed for production (skip typecheck and mockup-sandbox)
 ENV BASE_PATH=/
-RUN pnpm -r --if-present run build
+RUN pnpm --filter @workspace/kvarenda run build && \
+    pnpm --filter @workspace/api-server run build
 
 # Production stage
 FROM node:22-slim AS production
