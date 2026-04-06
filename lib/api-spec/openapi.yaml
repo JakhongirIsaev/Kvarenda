@@ -82,6 +82,10 @@ paths:
           schema:
             type: string
             enum: [basic, pro]
+        - name: ownerId
+          in: query
+          schema:
+            type: integer
         - name: limit
           in: query
           schema:
@@ -826,6 +830,11 @@ components:
           type: number
         longitude:
           type: number
+        published:
+          type: boolean
+        status:
+          type: string
+          enum: [draft, pending_moderation, active, inactive]
       required: [ownerId, title, address, district, rooms, priceUzs, plan]
 
     UpdateListingBody:

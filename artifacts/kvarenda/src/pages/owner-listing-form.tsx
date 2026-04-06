@@ -104,6 +104,8 @@ export function OwnerListingForm() {
       plan: "basic" as const,
       amenities: values.amenities,
       rules: values.rules,
+      published: true,
+      status: "active" as const,
     };
 
     try {

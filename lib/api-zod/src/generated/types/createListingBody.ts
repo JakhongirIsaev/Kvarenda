@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { CreateListingBodyPlan } from "./createListingBodyPlan";
+import type { CreateListingBodyStatus } from "./createListingBodyStatus";
 
 export interface CreateListingBody {
   ownerId: number;
@@ -25,4 +26,6 @@ export interface CreateListingBody {
   rules?: string;
   latitude?: number;
   longitude?: number;
+  published?: boolean;
+  status?: CreateListingBodyStatus;
 }

@@ -124,6 +124,16 @@ export const CreateListingBodyPlan = {
   pro: "pro",
 } as const;
 
+export type CreateListingBodyStatus =
+  (typeof CreateListingBodyStatus)[keyof typeof CreateListingBodyStatus];
+
+export const CreateListingBodyStatus = {
+  draft: "draft",
+  pending_moderation: "pending_moderation",
+  active: "active",
+  inactive: "inactive",
+} as const;
+
 export interface CreateListingBody {
   ownerId: number;
   title: string;
@@ -142,6 +152,8 @@ export interface CreateListingBody {
   rules?: string;
   latitude?: number;
   longitude?: number;
+  published?: boolean;
+  status?: CreateListingBodyStatus;
 }
 
 export type UpdateListingBodyPlan =
@@ -403,6 +415,7 @@ export type GetListingsParams = {
   has3dTour?: boolean;
   hasInsurance?: boolean;
   plan?: GetListingsPlan;
+  ownerId?: number;
   limit?: number;
   offset?: number;
 };

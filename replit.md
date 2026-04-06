@@ -27,8 +27,8 @@ Full-stack apartment rental platform (Zillow/Zumper-inspired) built for the Uzbe
 - `/my/applications` — Tenant's applications with status tracking
 - `/my/rental` — Active rental dashboard with payment history
 - `/my/contract/:id` — Contract viewer with signing UI
-- `/owner` — Owner dashboard (listings, applications, rentals, income stats)
-- `/owner/listings/new` — Create new listing form
+- `/owner` — Owner dashboard (own listings only, applications for owner's listings, rentals, income stats)
+- `/owner/listings/new` — Create new listing form (auto-publishes as active)
 - `/owner/listings/:id/edit` — Edit existing listing form
 - `/admin` — Admin panel: stats, users, listings, applications, payments tables (admin role only)
 

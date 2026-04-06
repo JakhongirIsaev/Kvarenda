@@ -14,6 +14,7 @@ export * from "./createApplicationBody";
 export * from "./createContractBody";
 export * from "./createListingBody";
 export * from "./createListingBodyPlan";
+export * from "./createListingBodyStatus";
 export * from "./createPaymentBody";
 export * from "./createPaymentBodyMethod";
 export * from "./createUserBody";

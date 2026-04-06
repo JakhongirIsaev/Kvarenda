@@ -26,8 +26,13 @@ router.get("/", async (req, res) => {
   if (query.has3dTour !== undefined) conditions.push(eq(listingsTable.has3dTour, query.has3dTour));
   if (query.hasInsurance !== undefined) conditions.push(eq(listingsTable.hasInsurance, query.hasInsurance));
   if (query.plan) conditions.push(eq(listingsTable.plan, query.plan as "basic" | "pro"));
+  if (query.ownerId !== undefined) conditions.push(eq(listingsTable.ownerId, query.ownerId));
 
-  conditions.push(eq(listingsTable.published, true));
+  const sessionUserId = (req.session as any)?.userId;
+  const isOwnerViewingOwn = query.ownerId !== undefined && sessionUserId === query.ownerId;
+  if (!isOwnerViewingOwn) {
+    conditions.push(eq(listingsTable.published, true));
+  }
 
   const limit = query.limit ?? 20;
   const offset = query.offset ?? 0;

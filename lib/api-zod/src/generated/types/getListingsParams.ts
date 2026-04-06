@@ -17,6 +17,7 @@ export type GetListingsParams = {
   has3dTour?: boolean;
   hasInsurance?: boolean;
   plan?: GetListingsPlan;
+  ownerId?: number;
   limit?: number;
   offset?: number;
 };

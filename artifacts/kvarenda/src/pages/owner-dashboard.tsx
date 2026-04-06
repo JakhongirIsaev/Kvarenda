@@ -18,7 +18,7 @@ export function OwnerDashboard() {
 
   const { data: dashboard, isLoading } = useGetOwnerDashboard(userId);
   const { data: applications, refetch: refetchApps } = useGetApplications({ ownerId: userId });
-  const { data: listingsData } = useGetListings({ limit: 50 });
+  const { data: listingsData } = useGetListings({ ownerId: userId, limit: 50 });
   const { data: rentalsData } = useGetRentals({ ownerId: userId });
   const updateApp = useUpdateApplicationStatus();
 

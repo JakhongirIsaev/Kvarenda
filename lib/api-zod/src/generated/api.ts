@@ -27,6 +27,7 @@ export const GetListingsQueryParams = zod.object({
   has3dTour: zod.coerce.boolean().optional(),
   hasInsurance: zod.coerce.boolean().optional(),
   plan: zod.enum(["basic", "pro"]).optional(),
+  ownerId: zod.coerce.number().optional(),
   limit: zod.coerce.number().optional(),
   offset: zod.coerce.number().optional(),
 });
@@ -89,6 +90,10 @@ export const CreateListingBody = zod.object({
   rules: zod.string().optional(),
   latitude: zod.number().optional(),
   longitude: zod.number().optional(),
+  published: zod.boolean().optional(),
+  status: zod
+    .enum(["draft", "pending_moderation", "active", "inactive"])
+    .optional(),
 });
 
 /**
