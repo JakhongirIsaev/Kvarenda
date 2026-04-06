@@ -6,16 +6,21 @@ import { CreateUserBody, GetUserParams, UpdateUserParams, UpdateUserBody } from 
 
 const router = Router();
 
+function stripPassword(user: any) {
+  const { password, ...safe } = user;
+  return safe;
+}
+
 router.get("/", async (req, res) => {
   const users = await db.select().from(usersTable).orderBy(usersTable.createdAt);
-  res.json(users);
+  res.json(users.map(stripPassword));
 });
 
 router.get("/:id", async (req, res) => {
   const { id } = GetUserParams.parse(req.params);
   const [user] = await db.select().from(usersTable).where(eq(usersTable.id, id)).limit(1);
   if (!user) return res.status(404).json({ error: "Not found" });
-  res.json(user);
+  res.json(stripPassword(user));
 });
 
 router.post("/", async (req, res) => {
@@ -24,7 +29,7 @@ router.post("/", async (req, res) => {
     .insert(usersTable)
     .values({ ...body, role: body.role as "tenant" | "owner" | "admin" })
     .returning();
-  res.status(201).json(user);
+  res.status(201).json(stripPassword(user));
 });
 
 router.put("/:id", async (req, res) => {
@@ -36,7 +41,7 @@ router.put("/:id", async (req, res) => {
     .where(eq(usersTable.id, id))
     .returning();
   if (!user) return res.status(404).json({ error: "Not found" });
-  res.json(user);
+  res.json(stripPassword(user));
 });
 
 export default router;

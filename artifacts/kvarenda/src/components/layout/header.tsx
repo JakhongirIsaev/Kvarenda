@@ -4,25 +4,28 @@ import { useRole } from "@/lib/role-context";
 import { useI18n, useT, Language } from "@/lib/i18n";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Shield, Globe } from "lucide-react";
+import { Menu, X, Shield, Globe, LogIn, LogOut, User } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
-const LANG_LABELS: Record<Language, string> = { en: "EN", ru: "RU", uz: "UZ" };
-
 export function Header() {
-  const { role, setRole } = useRole();
+  const { role, user, isAuthenticated, isLoading, logout } = useRole();
   const { lang, setLang, t } = useI18n();
   const { tr } = useT();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
 
   const navLinks = [
     { href: "/listings", label: tr(t.nav.search), show: true },
-    { href: "/my/applications", label: tr(t.nav.applications), show: role === "tenant" },
-    { href: "/my/rental", label: tr(t.nav.myRental), show: role === "tenant" },
-    { href: "/owner", label: tr(t.nav.dashboard), show: role === "owner" },
-    { href: "/admin", label: tr(t.nav.adminPanel), show: role === "admin" },
+    { href: "/my/applications", label: tr(t.nav.applications), show: isAuthenticated && role === "tenant" },
+    { href: "/my/rental", label: tr(t.nav.myRental), show: isAuthenticated && role === "tenant" },
+    { href: "/owner", label: tr(t.nav.dashboard), show: isAuthenticated && role === "owner" },
+    { href: "/admin", label: tr(t.nav.adminPanel), show: isAuthenticated && role === "admin" },
   ].filter(l => l.show);
+
+  const handleLogout = async () => {
+    await logout();
+    setLocation("/");
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -61,16 +64,37 @@ export function Header() {
             </SelectContent>
           </Select>
 
-          <Select value={role} onValueChange={(val: any) => setRole(val)}>
-            <SelectTrigger className="w-auto min-w-[110px] md:min-w-[130px] h-9 text-xs md:text-sm">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="tenant">{tr(t.nav.tenant)}</SelectItem>
-              <SelectItem value="owner">{tr(t.nav.owner)}</SelectItem>
-              <SelectItem value="admin">{tr(t.nav.admin)}</SelectItem>
-            </SelectContent>
-          </Select>
+          {!isLoading && (
+            <>
+              {isAuthenticated ? (
+                <div className="hidden md:flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-muted text-sm">
+                    <User className="w-3.5 h-3.5" />
+                    <span className="font-medium max-w-[120px] truncate">{user?.name}</span>
+                    <span className="text-muted-foreground text-xs capitalize">({tr(t.nav[role as keyof typeof t.nav] || t.nav.tenant)})</span>
+                  </div>
+                  <Button variant="ghost" size="sm" onClick={handleLogout} className="gap-1.5 text-muted-foreground hover:text-foreground">
+                    <LogOut className="w-4 h-4" />
+                    <span className="hidden lg:inline">{tr(t.auth.logout)}</span>
+                  </Button>
+                </div>
+              ) : (
+                <div className="hidden md:flex items-center gap-2">
+                  <Link href="/login">
+                    <Button variant="ghost" size="sm" className="gap-1.5">
+                      <LogIn className="w-4 h-4" />
+                      {tr(t.auth.login)}
+                    </Button>
+                  </Link>
+                  <Link href="/register">
+                    <Button size="sm" className="gap-1.5">
+                      {tr(t.auth.register)}
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </>
+          )}
 
           <Button
             variant="ghost"
@@ -107,6 +131,41 @@ export function Header() {
                   {link.label}
                 </Link>
               ))}
+
+              {isAuthenticated ? (
+                <>
+                  <div className="px-3 py-2.5 text-sm text-muted-foreground flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    <span className="font-medium">{user?.name}</span>
+                    <span className="text-xs capitalize">({tr(t.nav[role as keyof typeof t.nav] || t.nav.tenant)})</span>
+                  </div>
+                  <button
+                    onClick={() => { handleLogout(); setMobileOpen(false); }}
+                    className="px-3 py-2.5 rounded-lg text-sm font-medium text-left text-red-600 hover:bg-red-50 flex items-center gap-2"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    {tr(t.auth.logout)}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="px-3 py-2.5 rounded-lg text-sm font-medium text-foreground hover:bg-muted flex items-center gap-2"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <LogIn className="w-4 h-4" />
+                    {tr(t.auth.login)}
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="px-3 py-2.5 rounded-lg text-sm font-medium text-primary hover:bg-primary/10 flex items-center gap-2"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {tr(t.auth.register)}
+                  </Link>
+                </>
+              )}
             </nav>
           </motion.div>
         )}

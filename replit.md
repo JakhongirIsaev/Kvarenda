@@ -9,7 +9,7 @@ Full-stack apartment rental platform (Zillow/Zumper-inspired) built for the Uzbe
 - **UZS pricing** - All prices in Uzbek Som, formatted as "2,500,000 so'm"
 - **Trust badges** - Verified Owner (blue), Protected Rent (green), 3D Tour (purple), Insurance (orange)
 - **5% service fee** - Hidden from tenants; owner sets base price, tenants see price×1.05 seamlessly; admin panel shows raw fee breakdown
-- **Role simulation** - Header dropdown switcher: Tenant (userId=1), Owner (userId=2), Admin (userId=3)
+- **Authentication** - Session-based auth with bcrypt password hashing, login/register pages, role-based access (tenant/owner/admin)
 - **Tashkent districts** - Yunusobod, Mirzo Ulugbek, Chilonzor, Shaykhontohur, Yakkasaroy, Uchtepa, Olmazor, Sergeli
 - **Interactive map** - Leaflet/OpenStreetMap map with price markers on home page
 - **Mobile responsive** - Hamburger menu, stacked layouts for mobile viewports
@@ -18,6 +18,8 @@ Full-stack apartment rental platform (Zillow/Zumper-inspired) built for the Uzbe
 
 ## Pages / Routes
 
+- `/login` — Sign in page (email + password)
+- `/register` — Registration page (role selection, name, email, phone, password)
 - `/` — Home with hero search, interactive map, featured listings, "Why Kvarenda?" section, CTA
 - `/listings` — All listings with filters (district, rooms, price, trust badges)
 - `/listings/:id` — Listing detail with photo gallery, trust badges, pricing breakdown, apply button
@@ -53,7 +55,7 @@ Full-stack apartment rental platform (Zillow/Zumper-inspired) built for the Uzbe
 
 ## DB Schema
 
-- `users` — id, name, email, role (tenant/owner/admin), verified, phone
+- `users` — id, name, email, password (bcrypt hash), role (tenant/owner/admin), verified, phone
 - `listings` — id, ownerId, title, district, address, priceUzs, rooms, area, floor, status, plan (basic/pro), has3dTour, hasInsurance, amenities[], photos[], latitude, longitude
 - `applications` — id, listingId, tenantId, moveInDate, durationMonths, purpose, message, status (pending/approved/rejected/cancelled)
 - `contracts` — id, applicationId, listingId, tenantId, ownerId, startDate, endDate, monthlyRentUzs, depositUzs, serviceFeePercent, tenantSigned, ownerSigned
@@ -68,7 +70,7 @@ Full-stack apartment rental platform (Zillow/Zumper-inspired) built for the Uzbe
 
 ## Layout Components
 
-- `Header` — Logo, nav links (role-aware), language switcher (EN/RU/UZ), role dropdown, mobile hamburger menu
+- `Header` — Logo, nav links (role-aware), language switcher (EN/RU/UZ), Sign In/Sign Up (unauthenticated) or user name + Sign Out (authenticated), mobile hamburger menu
 - `I18nProvider` — Context-based i18n with translations for all UI text in EN/RU/UZ
 - `Footer` — 4-column: branding, tenant links, owner links, contact info + copyright
 - `ListingMap` — Leaflet map with price-bubble markers and popup cards

@@ -17,6 +17,8 @@ import { OwnerDashboard } from "@/pages/owner-dashboard";
 import { OwnerListingForm } from "@/pages/owner-listing-form";
 import { ContractView } from "@/pages/contract-view";
 import { Admin } from "@/pages/admin";
+import { Login } from "@/pages/login";
+import { Register } from "@/pages/register";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +27,8 @@ function Router() {
     <Layout>
       <Switch>
         <Route path="/" component={Home} />
+        <Route path="/login" component={Login} />
+        <Route path="/register" component={Register} />
         <Route path="/listings" component={Listings} />
         <Route path="/listings/:id" component={ListingDetail} />
         <Route path="/apply/:listingId" component={Apply} />
