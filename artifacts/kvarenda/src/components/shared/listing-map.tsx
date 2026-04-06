@@ -1,39 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Listing } from "@workspace/api-client-react";
 import { formatUzs, trText } from "@/lib/utils";
 import { useI18n, useT } from "@/lib/i18n";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
-const TASHKENT_CENTER = [69.2700, 41.3275];
+const TASHKENT_CENTER: [number, number] = [41.3275, 69.2700];
 const DEFAULT_ZOOM = 12;
-
-let mapglPromise: Promise<any> | null = null;
-
-function loadMapGL(): Promise<any> {
-  if (mapglPromise) return mapglPromise;
-
-  mapglPromise = new Promise((resolve, reject) => {
-    if ((window as any).mapgl) {
-      resolve((window as any).mapgl);
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.src = "https://mapgl.2gis.com/api/js/v1";
-    script.async = true;
-    script.onload = () => {
-      const mg = (window as any).mapgl;
-      if (mg) resolve(mg);
-      else reject(new Error("mapgl not found"));
-    };
-    script.onerror = () => {
-      mapglPromise = null;
-      reject(new Error("Failed to load 2GIS MapGL"));
-    };
-    document.head.appendChild(script);
-  });
-
-  return mapglPromise;
-}
 
 interface ListingMapProps {
   listings: Listing[];
@@ -43,11 +16,7 @@ interface ListingMapProps {
 
 export function ListingMap({ listings, className = "", height = "500px" }: ListingMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<any>(null);
-  const markersRef = useRef<any[]>([]);
-  const [error, setError] = useState(false);
-  const [popupListing, setPopupListing] = useState<Listing | null>(null);
-  const [popupPos, setPopupPos] = useState<{ x: number; y: number } | null>(null);
+  const mapRef = useRef<L.Map | null>(null);
   const { t, lang } = useI18n();
   const { tr } = useT();
 
@@ -56,99 +25,98 @@ export function ListingMap({ listings, className = "", height = "500px" }: Listi
   useEffect(() => {
     if (!containerRef.current || mappable.length === 0) return;
 
-    let destroyed = false;
+    if (mapRef.current) {
+      mapRef.current.remove();
+      mapRef.current = null;
+    }
 
-    const init = async () => {
-      try {
-        const mapgl = await loadMapGL();
-        if (destroyed || !containerRef.current) return;
+    const map = L.map(containerRef.current, {
+      center: TASHKENT_CENTER,
+      zoom: DEFAULT_ZOOM,
+      zoomControl: true,
+      attributionControl: false,
+    });
 
-        if (mapRef.current) {
-          mapRef.current.destroy();
-          mapRef.current = null;
-        }
-        markersRef.current.forEach(m => m.destroy());
-        markersRef.current = [];
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+    }).addTo(map);
 
-        const map = new mapgl.Map(containerRef.current, {
-          center: TASHKENT_CENTER,
-          zoom: DEFAULT_ZOOM,
-          key: "bfd8bbca-8abf-11ea-b033-5fa57aae2de7",
-        });
+    L.control.attribution({ position: "bottomright", prefix: false })
+      .addAttribution('© <a href="https://www.openstreetmap.org/copyright">OSM</a>')
+      .addTo(map);
 
-        const newMarkers: any[] = [];
+    const bounds = L.latLngBounds([]);
 
-        mappable.forEach((listing) => {
-          const tenantPrice = Math.round(listing.priceUzs * 1.05);
-          const formatted = tenantPrice >= 1000000
-            ? `${(tenantPrice / 1000000).toFixed(1)}M`
-            : `${(tenantPrice / 1000).toFixed(0)}K`;
+    mappable.forEach((listing) => {
+      const tenantPrice = Math.round(listing.priceUzs * 1.05);
+      const formatted = tenantPrice >= 1000000
+        ? `${(tenantPrice / 1000000).toFixed(1)}M`
+        : `${(tenantPrice / 1000).toFixed(0)}K`;
 
-          const marker = new mapgl.HtmlMarker(map, {
-            coordinates: [listing.longitude!, listing.latitude!],
-            html: `<div class="dgis-price-marker" data-listing-id="${listing.id}">${formatted} so'm</div>`,
-            anchor: [0, 0],
-          });
+      const icon = L.divIcon({
+        className: "kv-marker-wrapper",
+        html: `<div class="kv-price-marker">${formatted} so'm</div>`,
+        iconSize: [0, 0],
+        iconAnchor: [0, 0],
+      });
 
-          marker.on("click", () => {
-            setPopupListing(listing);
-            document.querySelectorAll(".dgis-price-marker").forEach(m => {
-              (m as HTMLElement).classList.remove("active");
-            });
-            const el = document.querySelector(`[data-listing-id="${listing.id}"]`);
-            if (el) (el as HTMLElement).classList.add("active");
+      const latlng: [number, number] = [listing.latitude!, listing.longitude!];
+      bounds.extend(latlng);
 
-            const rect = containerRef.current?.getBoundingClientRect();
-            if (rect && el) {
-              const markerRect = el.getBoundingClientRect();
-              setPopupPos({
-                x: markerRect.left - rect.left + markerRect.width / 2,
-                y: markerRect.top - rect.top - 8,
-              });
-            }
-          });
+      const photoHtml = listing.photos?.[0]
+        ? `<img src="${listing.photos[0]}" style="width:100%;height:100px;object-fit:cover;border-radius:8px 8px 0 0;" />`
+        : "";
 
-          newMarkers.push(marker);
-        });
+      const areaText = listing.area ? ` · ${listing.area} m²` : "";
 
-        markersRef.current = newMarkers;
+      const popupContent = `
+        <div style="font-family:system-ui,-apple-system,sans-serif;min-width:220px;max-width:260px;margin:-14px -20px -14px -20px;">
+          ${photoHtml}
+          <div style="padding:10px 14px 12px;">
+            <div style="font-weight:600;font-size:14px;margin-bottom:4px;line-height:1.3;">${trText(listing.title, lang)}</div>
+            <div style="font-size:12px;color:#64748b;margin-bottom:3px;">${listing.district}</div>
+            <div style="font-size:12px;color:#64748b;margin-bottom:8px;">${listing.rooms} ${tr(t.detail.room)}${areaText}</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <span style="font-weight:700;color:#2563eb;font-size:13px;">${formatUzs(tenantPrice)}${tr(t.common.perMonth)}</span>
+              <a href="/listings/${listing.id}" style="background:#2563eb;color:#fff;padding:5px 14px;border-radius:6px;font-size:12px;text-decoration:none;font-weight:500;">${tr(t.map.view)}</a>
+            </div>
+          </div>
+        </div>
+      `;
 
-        if (mappable.length > 1) {
-          const lngs = mappable.map(l => l.longitude!);
-          const lats = mappable.map(l => l.latitude!);
-          const padding = 0.015;
-          map.fitBounds({
-            southWest: [Math.min(...lngs) - padding, Math.min(...lats) - padding],
-            northEast: [Math.max(...lngs) + padding, Math.max(...lats) + padding],
-          });
-        } else if (mappable.length === 1) {
-          map.setCenter([mappable[0].longitude!, mappable[0].latitude!]);
-          map.setZoom(15);
-        }
+      const marker = L.marker(latlng, { icon }).addTo(map);
+      marker.bindPopup(popupContent, {
+        maxWidth: 280,
+        minWidth: 220,
+        closeButton: true,
+        className: "kv-popup",
+      });
 
-        map.on("click", () => {
-          setPopupListing(null);
-          setPopupPos(null);
-          document.querySelectorAll(".dgis-price-marker").forEach(m => {
-            (m as HTMLElement).classList.remove("active");
-          });
-        });
+      marker.on("click", () => {
+        document.querySelectorAll(".kv-price-marker").forEach(el => el.classList.remove("active"));
+        const el = marker.getElement()?.querySelector(".kv-price-marker");
+        if (el) el.classList.add("active");
+      });
 
-        mapRef.current = map;
-      } catch (err) {
-        console.error("2GIS map init error:", err);
-        setError(true);
-      }
-    };
+      marker.on("popupclose", () => {
+        const el = marker.getElement()?.querySelector(".kv-price-marker");
+        if (el) el.classList.remove("active");
+      });
+    });
 
-    init();
+    if (mappable.length > 1) {
+      map.fitBounds(bounds, { padding: [40, 40] });
+    } else if (mappable.length === 1) {
+      map.setView([mappable[0].latitude!, mappable[0].longitude!], 15);
+    }
+
+    mapRef.current = map;
+
+    setTimeout(() => map.invalidateSize(), 100);
 
     return () => {
-      destroyed = true;
-      markersRef.current.forEach(m => { try { m.destroy(); } catch {} });
-      markersRef.current = [];
       if (mapRef.current) {
-        try { mapRef.current.destroy(); } catch {}
+        mapRef.current.remove();
         mapRef.current = null;
       }
     };
@@ -156,22 +124,14 @@ export function ListingMap({ listings, className = "", height = "500px" }: Listi
 
   if (mappable.length === 0) return null;
 
-  if (error) {
-    return (
-      <div className={`rounded-2xl overflow-hidden border border-border shadow-sm flex flex-col items-center justify-center bg-muted/30 gap-3 ${className}`} style={{ height }}>
-        <div className="text-4xl">🗺️</div>
-        <p className="text-muted-foreground text-sm font-medium">{tr(t.map.title)}</p>
-        <p className="text-muted-foreground text-xs">{mappable.length} {tr(t.map.listingsOnMap)}</p>
-      </div>
-    );
-  }
-
-  const tenantPrice = popupListing ? Math.round(popupListing.priceUzs * 1.05) : 0;
-
   return (
     <div className={`rounded-2xl overflow-hidden border border-border shadow-sm relative ${className}`} style={{ height }}>
       <style>{`
-        .dgis-price-marker {
+        .kv-marker-wrapper {
+          background: transparent !important;
+          border: none !important;
+        }
+        .kv-price-marker {
           background: #ffffff;
           color: #1e293b;
           border: 2px solid #cbd5e1;
@@ -182,12 +142,12 @@ export function ListingMap({ listings, className = "", height = "500px" }: Listi
           white-space: nowrap;
           box-shadow: 0 2px 8px rgba(0,0,0,0.15);
           cursor: pointer;
-          transition: all 0.2s;
+          transition: all 0.15s ease;
           font-family: system-ui, -apple-system, sans-serif;
           transform: translate(-50%, -100%);
           position: relative;
         }
-        .dgis-price-marker::after {
+        .kv-price-marker::after {
           content: "";
           position: absolute;
           bottom: -6px;
@@ -199,59 +159,35 @@ export function ListingMap({ listings, className = "", height = "500px" }: Listi
           border-right: 5px solid transparent;
           border-top: 6px solid #cbd5e1;
         }
-        .dgis-price-marker:hover, .dgis-price-marker.active {
+        .kv-price-marker:hover,
+        .kv-price-marker.active {
           background: #2563eb;
           color: #ffffff;
           border-color: #2563eb;
+          transform: translate(-50%, -100%) scale(1.05);
+          z-index: 1000 !important;
         }
-        .dgis-price-marker:hover::after, .dgis-price-marker.active::after {
+        .kv-price-marker:hover::after,
+        .kv-price-marker.active::after {
           border-top-color: #2563eb;
+        }
+        .kv-popup .leaflet-popup-content-wrapper {
+          border-radius: 12px;
+          padding: 0;
+          overflow: hidden;
+          box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        .kv-popup .leaflet-popup-content {
+          margin: 14px 20px;
+        }
+        .kv-popup .leaflet-popup-tip {
+          box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .leaflet-container {
+          font-family: system-ui, -apple-system, sans-serif;
         }
       `}</style>
       <div ref={containerRef} style={{ height: "100%", width: "100%" }} />
-
-      {popupListing && popupPos && (
-        <div
-          className="absolute z-[1000] bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-200"
-          style={{
-            left: popupPos.x,
-            top: popupPos.y,
-            transform: "translate(-50%, -100%)",
-            width: 260,
-          }}
-        >
-          {popupListing.photos?.[0] && (
-            <img
-              src={popupListing.photos[0]}
-              alt={trText(popupListing.title, lang)}
-              className="w-full h-28 object-cover"
-            />
-          )}
-          <div className="p-3">
-            <p className="font-semibold text-sm mb-1">{trText(popupListing.title, lang)}</p>
-            <p className="text-xs text-muted-foreground mb-1">{popupListing.district}</p>
-            <div className="flex items-center gap-3 text-xs text-muted-foreground mb-2">
-              <span>{popupListing.rooms} {tr(t.detail.room)}</span>
-              {popupListing.area && <span>{popupListing.area} m²</span>}
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="font-bold text-primary text-sm">{formatUzs(tenantPrice)}{tr(t.common.perMonth)}</span>
-              <a
-                href={`/listings/${popupListing.id}`}
-                className="text-xs bg-primary text-white px-3 py-1.5 rounded-md hover:bg-primary/90 transition-colors"
-              >
-                {tr(t.map.view)}
-              </a>
-            </div>
-          </div>
-          <button
-            className="absolute top-1 right-1 bg-black/40 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-black/60 transition-colors"
-            onClick={(e) => { e.stopPropagation(); setPopupListing(null); setPopupPos(null); }}
-          >
-            ×
-          </button>
-        </div>
-      )}
     </div>
   );
 }
