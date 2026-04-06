@@ -403,7 +403,9 @@ const translations = {
     owner: { en: "Owner", ru: "Владелец", uz: "Uy egasi" },
   },
   map: {
+    title: { en: "Explore on Map", ru: "Карта", uz: "Xarita" },
     view: { en: "View", ru: "Смотреть", uz: "Ko'rish" },
+    listingsOnMap: { en: "apartments on map", ru: "квартир на карте", uz: "xonadon xaritada" },
   },
   auth: {
     login: { en: "Sign In", ru: "Войти", uz: "Kirish" },

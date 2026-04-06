@@ -9,12 +9,15 @@ Full-stack apartment rental platform (Zillow/Zumper-inspired) built for the Uzbe
 - **UZS pricing** - All prices in Uzbek Som, formatted as "2,500,000 so'm"
 - **Trust badges** - Verified Owner (blue), Protected Rent (green), 3D Tour (purple), Insurance (orange)
 - **5% service fee** - Hidden from tenants; owner sets base price, tenants see price×1.05 seamlessly; admin panel shows raw fee breakdown
-- **Authentication** - Session-based auth with bcrypt password hashing, login/register pages, role-based access (tenant/owner/admin)
+- **Authentication** - Session-based auth with bcrypt password hashing, login/register pages, role-based access (tenant/owner/admin); phone number required at registration
 - **Tashkent districts** - Yunusobod, Mirzo Ulugbek, Chilonzor, Shaykhontohur, Yakkasaroy, Uchtepa, Olmazor, Sergeli
-- **Interactive map** - Leaflet/OpenStreetMap map with price markers on home page
+- **Interactive map** - 2GIS MapGL map with custom price-bubble markers and popup cards (WebGL-based, fallback for non-WebGL environments)
 - **Mobile responsive** - Hamburger menu, stacked layouts for mobile viewports
 - **Multi-language (i18n)** - English, Russian (Русский), Uzbek (O'zbek) with language switcher in header
 - **Persistent language** - Language choice saved to localStorage
+- **Photo URLs** - Owner can add multiple photo URLs with thumbnail previews to listings
+- **Calendar picker** - shadcn/ui Calendar + Popover for date selection (move-in dates)
+- **Detailed applications** - Owner sees tenant name, phone, email, purpose, message in application dashboard
 
 ## Pages / Routes
 
@@ -38,7 +41,8 @@ Full-stack apartment rental platform (Zillow/Zumper-inspired) built for the Uzbe
 - **Node.js version**: 24
 - **Package manager**: pnpm
 - **TypeScript version**: 5.9
-- **Frontend**: React + Vite (`@workspace/kvarenda`), Tailwind CSS, shadcn/ui, wouter, framer-motion, leaflet/react-leaflet
+- **Frontend**: React + Vite (`@workspace/kvarenda`), Tailwind CSS, shadcn/ui, wouter, framer-motion, date-fns
+- **Map**: 2GIS MapGL (loaded via CDN script, no npm package)
 - **API framework**: Express 5 (`@workspace/api-server`)
 - **Database**: PostgreSQL + Drizzle ORM (`@workspace/db`)
 - **API spec**: OpenAPI 3.0 (`lib/api-spec/openapi.yaml`)
@@ -73,7 +77,7 @@ Full-stack apartment rental platform (Zillow/Zumper-inspired) built for the Uzbe
 - `Header` — Logo, nav links (role-aware), language switcher (EN/RU/UZ), Sign In/Sign Up (unauthenticated) or user name + Sign Out (authenticated), mobile hamburger menu
 - `I18nProvider` — Context-based i18n with translations for all UI text in EN/RU/UZ
 - `Footer` — 4-column: branding, tenant links, owner links, contact info + copyright
-- `ListingMap` — Leaflet map with price-bubble markers and popup cards
+- `ListingMap` — 2GIS MapGL map with price-bubble markers and React popup cards (graceful fallback for non-WebGL)
 - `ListingCard` — Reusable listing card with trust badges, price overlay
 
 See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.
