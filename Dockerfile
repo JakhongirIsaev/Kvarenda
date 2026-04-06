@@ -4,26 +4,11 @@ RUN corepack enable && corepack prepare pnpm@9 --activate
 
 WORKDIR /app
 
-# Copy workspace config first for layer caching
-COPY package.json pnpm-workspace.yaml pnpm-lock.yaml .npmrc ./
-COPY tsconfig.base.json tsconfig.json ./
-
-# Copy all package.json files from workspace packages
-COPY lib/package.json lib/tsconfig.json ./lib/
-COPY lib/db/src/ ./lib/db/src/
-COPY lib/api-spec/ ./lib/api-spec/
-COPY lib/api-zod/ ./lib/api-zod/
-COPY lib/api-client-react/ ./lib/api-client-react/
-COPY artifacts/api-server/package.json artifacts/api-server/tsconfig.json artifacts/api-server/build.mjs ./artifacts/api-server/
-COPY artifacts/kvarenda/package.json artifacts/kvarenda/tsconfig.json artifacts/kvarenda/vite.config.ts artifacts/kvarenda/components.json ./artifacts/kvarenda/
-COPY artifacts/mockup-sandbox/ ./artifacts/mockup-sandbox/
-COPY scripts/ ./scripts/
+# Copy everything
+COPY . .
 
 # Install dependencies
 RUN pnpm install --no-frozen-lockfile
-
-# Copy all source code
-COPY . .
 
 # Build frontend and backend
 ENV BASE_PATH=/
