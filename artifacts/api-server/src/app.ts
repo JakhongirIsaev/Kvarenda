@@ -2,6 +2,9 @@ import express, { type Express } from "express";
 import cors from "cors";
 import session from "express-session";
 import pinoHttp from "pino-http";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { existsSync } from "node:fs";
 import router from "./routes";
 import authRouter from "./routes/auth";
 import { logger } from "./lib/logger";
@@ -47,5 +50,22 @@ app.use(session({
 
 app.use("/api/auth", authRouter);
 app.use("/api", router);
+
+// In production, serve the built React frontend
+if (process.env.NODE_ENV === "production") {
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
+  const staticPath = path.resolve(__dirname, "../../kvarenda/dist/public");
+
+  if (existsSync(staticPath)) {
+    app.use(express.static(staticPath));
+    // SPA fallback — serve index.html for all non-API routes
+    app.get("*", (_req, res) => {
+      res.sendFile(path.join(staticPath, "index.html"));
+    });
+    logger.info({ staticPath }, "Serving frontend static files");
+  } else {
+    logger.warn({ staticPath }, "Frontend build not found — static serving skipped");
+  }
+}
 
 export default app;
