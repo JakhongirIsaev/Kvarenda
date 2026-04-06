@@ -161,6 +161,9 @@ export const UpdateListingBody = zod.object({
   has3dTour: zod.boolean().optional(),
   hasInsurance: zod.boolean().optional(),
   insuranceStatus: zod.enum(["none", "available", "insured"]).optional(),
+  published: zod.boolean().optional(),
+  latitude: zod.number().optional(),
+  longitude: zod.number().optional(),
 });
 
 export const UpdateListingResponse = zod.object({

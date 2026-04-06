@@ -202,6 +202,9 @@ export interface UpdateListingBody {
   has3dTour?: boolean;
   hasInsurance?: boolean;
   insuranceStatus?: UpdateListingBodyInsuranceStatus;
+  published?: boolean;
+  latitude?: number;
+  longitude?: number;
 }
 
 export type ApplicationStatus =
