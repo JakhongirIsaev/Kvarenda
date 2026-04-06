@@ -2,16 +2,18 @@ import { useParams, useLocation, Link } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { ArrowLeft, Calendar, MessageSquare } from "lucide-react";
+import { ArrowLeft, CalendarIcon, MessageSquare } from "lucide-react";
+import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useGetListing, useCreateApplication } from "@workspace/api-client-react";
 import { useRole } from "@/lib/role-context";
 import { useToast } from "@/hooks/use-toast";
-import { formatUzs, trText } from "@/lib/utils";
+import { cn, formatUzs, trText } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { getGetApplicationsQueryKey } from "@workspace/api-client-react";
 import { useI18n, useT } from "@/lib/i18n";
@@ -109,11 +111,38 @@ export function Apply() {
                   control={form.control}
                   name="moveInDate"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex flex-col">
                       <FormLabel>{tr(t.apply.moveIn)}</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} data-testid="input-move-in-date" />
-                      </FormControl>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                              data-testid="input-move-in-date"
+                            >
+                              {field.value ? format(new Date(field.value), "PPP") : tr(t.apply.selectDate)}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value ? new Date(field.value) : undefined}
+                            onSelect={(date) => {
+                              if (date) {
+                                field.onChange(format(date, "yyyy-MM-dd"));
+                              }
+                            }}
+                            disabled={(date) => date < new Date()}
+                            autoFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
                       <FormMessage />
                     </FormItem>
                   )}

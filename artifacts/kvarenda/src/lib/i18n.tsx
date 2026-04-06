@@ -122,6 +122,9 @@ const translations = {
     Pool: { en: "Pool", ru: "Бассейн", uz: "Basseyn" },
     Concierge: { en: "Concierge", ru: "Консьерж", uz: "Konsyerj" },
     Terrace: { en: "Terrace", ru: "Терраса", uz: "Terrasa" },
+    Furniture: { en: "Furniture", ru: "Мебель", uz: "Mebel" },
+    "Kitchen appliances": { en: "Kitchen appliances", ru: "Кухонная техника", uz: "Oshxona jihozlari" },
+    TV: { en: "TV", ru: "Телевизор", uz: "Televizor" },
   },
   detail: {
     monthlyRent: { en: "Monthly rent", ru: "Ежемесячная аренда", uz: "Oylik ijara" },
@@ -154,6 +157,7 @@ const translations = {
     applyingFor: { en: "Applying for", ru: "Заявка на", uz: "Ariza" },
     submitTitle: { en: "Submit your application", ru: "Отправьте вашу заявку", uz: "Arizangizni yuboring" },
     moveIn: { en: "Move-in date", ru: "Дата заезда", uz: "Ko'chib o'tish sanasi" },
+    selectDate: { en: "Pick a date", ru: "Выберите дату", uz: "Sanani tanlang" },
     duration: { en: "Rental duration", ru: "Срок аренды", uz: "Ijara muddati" },
     selectDuration: { en: "Select duration", ru: "Выберите срок", uz: "Muddatni tanlang" },
     months3: { en: "3 months", ru: "3 месяца", uz: "3 oy" },

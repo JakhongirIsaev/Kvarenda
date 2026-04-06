@@ -41,7 +41,7 @@ export function OwnerListingForm() {
   const [, setLocation] = useLocation();
   const { userId, role } = useRole();
   const { toast } = useToast();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { tr } = useT();
 
   const { data: existing } = useGetListing(Number(id), {
@@ -309,23 +309,27 @@ export function OwnerListingForm() {
               <div>
                 <p className="text-sm font-medium mb-3">{tr(t.ownerForm.amenities)}</p>
                 <div className="grid grid-cols-2 gap-2">
-                  {AMENITIES.map(amenity => (
-                    <div key={amenity} className="flex items-center gap-2">
-                      <Checkbox
-                        id={`amenity-${amenity}`}
-                        checked={selectedAmenities.includes(amenity)}
-                        onCheckedChange={(checked) => {
-                          const curr = form.getValues("amenities") ?? [];
-                          form.setValue(
-                            "amenities",
-                            checked ? [...curr, amenity] : curr.filter(a => a !== amenity)
-                          );
-                        }}
-                        data-testid={`checkbox-amenity-${amenity}`}
-                      />
-                      <label htmlFor={`amenity-${amenity}`} className="text-sm cursor-pointer">{amenity}</label>
-                    </div>
-                  ))}
+                  {AMENITIES.map(amenity => {
+                    const label = (t.amenityLabels as Record<string, Record<string, string>>)[amenity];
+                    const displayName = label ? (label[lang] || label.en || amenity) : amenity;
+                    return (
+                      <div key={amenity} className="flex items-center gap-2">
+                        <Checkbox
+                          id={`amenity-${amenity}`}
+                          checked={selectedAmenities.includes(amenity)}
+                          onCheckedChange={(checked) => {
+                            const curr = form.getValues("amenities") ?? [];
+                            form.setValue(
+                              "amenities",
+                              checked ? [...curr, amenity] : curr.filter(a => a !== amenity)
+                            );
+                          }}
+                          data-testid={`checkbox-amenity-${amenity}`}
+                        />
+                        <label htmlFor={`amenity-${amenity}`} className="text-sm cursor-pointer">{displayName}</label>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
