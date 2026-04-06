@@ -1,6 +1,7 @@
 [build]
 builder = "nixpacks"
-buildCommand = "npm install -g pnpm && pnpm install --frozen-lockfile && BASE_PATH=/ NODE_ENV=production pnpm run build"
+nixpacksConfigPath = "nixpacks.toml"
+buildCommand = "pnpm install --no-frozen-lockfile && BASE_PATH=/ NODE_ENV=production pnpm run build"
 
 [deploy]
 startCommand = "NODE_ENV=production node --enable-source-maps artifacts/api-server/dist/index.mjs"
