@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Listing } from "@workspace/api-client-react";
-import { formatUzs } from "@/lib/utils";
+import { formatUzs, trText } from "@/lib/utils";
 import { Link } from "wouter";
 import { MapPin, Bed, Maximize } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -66,7 +66,7 @@ function MapBounds({ listings }: { listings: Listing[] }) {
 
 export function ListingMap({ listings, className = "", height = "500px" }: ListingMapProps) {
   const [activeId, setActiveId] = useState<number | null>(null);
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { tr } = useT();
 
   const mappable = listings.filter(l => l.latitude && l.longitude);
@@ -102,12 +102,12 @@ export function ListingMap({ listings, className = "", height = "500px" }: Listi
                 {listing.photos?.[0] && (
                   <img
                     src={listing.photos[0]}
-                    alt={listing.title}
+                    alt={trText(listing.title, lang)}
                     className="w-full h-32 object-cover"
                   />
                 )}
                 <div className="p-3">
-                  <p className="font-semibold text-sm text-foreground mb-1">{listing.title}</p>
+                  <p className="font-semibold text-sm text-foreground mb-1">{trText(listing.title, lang)}</p>
                   <p className="text-xs text-muted-foreground flex items-center gap-1 mb-2">
                     <MapPin className="w-3 h-3" />
                     {listing.district}

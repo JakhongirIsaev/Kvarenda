@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { formatUzs } from "@/lib/utils";
+import { formatUzs, trText } from "@/lib/utils";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { MapPin, Bed, Maximize } from "lucide-react";
 import { Listing } from "@workspace/api-client-react";
@@ -7,7 +7,7 @@ import { VerifiedOwnerBadge, ProtectedRentBadge, TourBadge, InsuranceBadge } fro
 import { useI18n, useT } from "@/lib/i18n";
 
 export function ListingCard({ listing }: { listing: Listing }) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { tr } = useT();
 
   const mockImages = ["/images/apt1.png", "/images/apt2.png", "/images/apt3.png"];
@@ -21,7 +21,7 @@ export function ListingCard({ listing }: { listing: Listing }) {
         <div className="relative aspect-[4/3] overflow-hidden">
           <img 
             src={photoUrl} 
-            alt={listing.title} 
+            alt={trText(listing.title, lang)} 
             className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
           />
           <div className="absolute top-3 left-3 flex flex-col gap-2">
@@ -34,7 +34,7 @@ export function ListingCard({ listing }: { listing: Listing }) {
           </div>
         </div>
         <CardContent className="p-4 flex-grow">
-          <h4 className="font-medium text-foreground line-clamp-1 mb-2 group-hover:text-primary transition-colors">{listing.title}</h4>
+          <h4 className="font-medium text-foreground line-clamp-1 mb-2 group-hover:text-primary transition-colors">{trText(listing.title, lang)}</h4>
           <div className="flex items-center text-muted-foreground text-sm mb-3">
             <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
             <span className="line-clamp-1">{listing.district}, {listing.address}</span>

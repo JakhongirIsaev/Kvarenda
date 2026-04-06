@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useGetListing, useCreateApplication } from "@workspace/api-client-react";
 import { useRole } from "@/lib/role-context";
 import { useToast } from "@/hooks/use-toast";
-import { formatUzs } from "@/lib/utils";
+import { formatUzs, trText } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { getGetApplicationsQueryKey } from "@workspace/api-client-react";
 import { useI18n, useT } from "@/lib/i18n";
@@ -31,7 +31,7 @@ export function Apply() {
   const { userId, role } = useRole();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { tr } = useT();
 
   const { data: listing, isLoading } = useGetListing(Number(listingId), {
@@ -94,7 +94,7 @@ export function Apply() {
           {listing && (
             <div className="bg-muted/50 p-5 border-b border-border">
               <p className="text-sm text-muted-foreground mb-1">{tr(t.apply.applyingFor)}</p>
-              <h2 className="font-semibold text-foreground">{listing.title}</h2>
+              <h2 className="font-semibold text-foreground">{trText(listing.title, lang)}</h2>
               <p className="text-sm text-muted-foreground">{listing.district}, {listing.address}</p>
               <p className="text-primary font-bold mt-2">{formatUzs(tenantPrice)}{tr(t.common.perMonth)}</p>
             </div>

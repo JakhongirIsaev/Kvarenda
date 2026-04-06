@@ -10,12 +10,12 @@ import {
 } from "@workspace/api-client-react";
 import { useRole } from "@/lib/role-context";
 import { useI18n, useT } from "@/lib/i18n";
-import { formatUzs, formatDate } from "@/lib/utils";
+import { formatUzs, formatDate, trText } from "@/lib/utils";
 import { motion } from "framer-motion";
 
 export function Admin() {
   const { role } = useRole();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { tr } = useT();
 
   const isAdmin = role === "admin";
@@ -152,7 +152,7 @@ export function Admin() {
                     {listings.map(listing => (
                       <tr key={listing.id} className="hover:bg-muted/30 transition-colors" data-testid={`row-listing-${listing.id}`}>
                         <td className="px-4 py-3 font-mono text-xs">{listing.id}</td>
-                        <td className="px-4 py-3 font-medium max-w-[200px] truncate">{listing.title}</td>
+                        <td className="px-4 py-3 font-medium max-w-[200px] truncate">{trText(listing.title, lang)}</td>
                         <td className="px-4 py-3 text-muted-foreground">{listing.district}</td>
                         <td className="px-4 py-3 font-medium">{formatUzs(listing.priceUzs)}</td>
                         <td className="px-4 py-3">

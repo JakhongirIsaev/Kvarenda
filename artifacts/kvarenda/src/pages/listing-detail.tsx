@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useGetListing, useCreateApplication } from "@workspace/api-client-react";
 import { useRole } from "@/lib/role-context";
-import { formatUzs } from "@/lib/utils";
+import { formatUzs, trText } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { VerifiedOwnerBadge, ProtectedRentBadge, TourBadge, InsuranceBadge } from "@/components/shared/trust-badges";
 import { useToast } from "@/hooks/use-toast";
@@ -18,7 +18,7 @@ export function ListingDetail() {
   const { role, userId } = useRole();
   const { toast } = useToast();
   const [photoIdx, setPhotoIdx] = useState(0);
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { tr } = useT();
 
   const { data: listing, isLoading } = useGetListing(Number(id), {
@@ -138,7 +138,7 @@ export function ListingDetail() {
             )}
 
             <div>
-              <h1 className="text-2xl font-bold text-foreground mb-2">{listing.title}</h1>
+              <h1 className="text-2xl font-bold text-foreground mb-2">{trText(listing.title, lang)}</h1>
               <div className="flex items-center text-muted-foreground gap-1 mb-4">
                 <MapPin className="w-4 h-4" />
                 <span>{listing.district}, {listing.address}</span>
@@ -166,7 +166,7 @@ export function ListingDetail() {
             {listing.description && (
               <div>
                 <h2 className="text-lg font-semibold mb-3">{tr(t.detail.about)}</h2>
-                <p className="text-muted-foreground leading-relaxed">{listing.description}</p>
+                <p className="text-muted-foreground leading-relaxed">{trText(listing.description, lang)}</p>
               </div>
             )}
 
@@ -176,7 +176,7 @@ export function ListingDetail() {
                 <div className="flex flex-wrap gap-2">
                   {listing.amenities.map((amenity) => (
                     <Badge key={amenity} variant="outline" className="text-sm py-1 px-3">
-                      {amenity}
+                      {(t.amenityLabels as any)[amenity] ? tr((t.amenityLabels as any)[amenity]) : amenity}
                     </Badge>
                   ))}
                 </div>
@@ -186,7 +186,7 @@ export function ListingDetail() {
             {listing.rules && (
               <div>
                 <h2 className="text-lg font-semibold mb-3">{tr(t.detail.rules)}</h2>
-                <p className="text-muted-foreground">{listing.rules}</p>
+                <p className="text-muted-foreground">{trText(listing.rules, lang)}</p>
               </div>
             )}
 
