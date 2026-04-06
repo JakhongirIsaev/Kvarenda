@@ -4,14 +4,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useGetApplications } from "@workspace/api-client-react";
 import { useRole } from "@/lib/role-context";
-import { formatUzs } from "@/lib/utils";
+import { formatUzs, trText } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useI18n, useT } from "@/lib/i18n";
 
 export function MyApplications() {
   const { userId } = useRole();
   const { data: applications, isLoading } = useGetApplications({ tenantId: userId });
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { tr } = useT();
 
   const statusConfigs: Record<string, { label: string; className: string }> = {
@@ -64,7 +64,7 @@ export function MyApplications() {
                           </Link>
                         )}
                       </div>
-                      <h3 className="font-semibold text-foreground truncate">{app.listingTitle}</h3>
+                      <h3 className="font-semibold text-foreground truncate">{trText(app.listingTitle, lang)}</h3>
                     </div>
                     {app.priceUzs && (
                       <p className="text-primary font-bold text-sm sm:text-base sm:text-right flex-shrink-0">{formatUzs(Math.round(app.priceUzs * 1.05))}{tr(t.common.perMonth)}</p>

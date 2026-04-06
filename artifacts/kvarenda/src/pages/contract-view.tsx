@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { useGetContract, useSignContract } from "@workspace/api-client-react";
 import { useRole } from "@/lib/role-context";
 import { useToast } from "@/hooks/use-toast";
-import { formatUzs, formatDate } from "@/lib/utils";
+import { formatUzs, formatDate, trText } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useI18n, useT } from "@/lib/i18n";
 
@@ -14,7 +14,7 @@ export function ContractView() {
   const { id } = useParams<{ id: string }>();
   const { role } = useRole();
   const { toast } = useToast();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { tr } = useT();
 
   const { data: contract, isLoading, refetch } = useGetContract(Number(id), {
@@ -117,7 +117,7 @@ export function ContractView() {
 
             <div>
               <p className="text-xs font-semibold uppercase text-muted-foreground mb-2">{tr(t.contract.property)}</p>
-              <p className="font-medium">{contract.listingTitle}</p>
+              <p className="font-medium">{trText(contract.listingTitle, lang)}</p>
               {contract.address && <p className="text-sm text-muted-foreground">{contract.address}</p>}
             </div>
 

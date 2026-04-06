@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { useGetTenantDashboard, useGetPayments, useCreatePayment } from "@workspace/api-client-react";
 import { useRole } from "@/lib/role-context";
 import { useToast } from "@/hooks/use-toast";
-import { formatUzs } from "@/lib/utils";
+import { formatUzs, trText } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useI18n, useT } from "@/lib/i18n";
 
@@ -15,7 +15,7 @@ export function MyRentals() {
   const { userId } = useRole();
   const { toast } = useToast();
   const [paying, setPaying] = useState(false);
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { tr } = useT();
 
   const { data: dashboard, isLoading: dashboardLoading, refetch: refetchDashboard } = useGetTenantDashboard(userId);
@@ -91,7 +91,7 @@ export function MyRentals() {
                   <div className="flex items-center gap-2 mb-1">
                     <Badge className="bg-green-500 text-white border-0">{tr(t.rental.active)}</Badge>
                   </div>
-                  <h2 className="font-semibold text-foreground text-lg truncate">{rental.listingTitle}</h2>
+                  <h2 className="font-semibold text-foreground text-lg truncate">{trText(rental.listingTitle, lang)}</h2>
                   <p className="text-muted-foreground text-sm">{rental.district}</p>
                 </div>
                 <div className="sm:text-right flex-shrink-0">

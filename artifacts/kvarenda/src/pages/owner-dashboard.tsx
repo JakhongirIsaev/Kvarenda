@@ -6,14 +6,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGetOwnerDashboard, useGetApplications, useGetListings, useGetRentals, useUpdateApplicationStatus } from "@workspace/api-client-react";
 import { useRole } from "@/lib/role-context";
 import { useToast } from "@/hooks/use-toast";
-import { formatUzs } from "@/lib/utils";
+import { formatUzs, trText } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useI18n, useT } from "@/lib/i18n";
 
 export function OwnerDashboard() {
   const { userId, role } = useRole();
   const { toast } = useToast();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { tr } = useT();
 
   const { data: dashboard, isLoading } = useGetOwnerDashboard(userId);
@@ -174,7 +174,7 @@ export function OwnerDashboard() {
                           </Badge>
                         </div>
                         <p className="font-medium">{app.tenantName}</p>
-                        <p className="text-sm text-muted-foreground truncate">{app.listingTitle}</p>
+                        <p className="text-sm text-muted-foreground truncate">{trText(app.listingTitle, lang)}</p>
                         <p className="text-xs text-muted-foreground mt-1">
                           {tr(t.myApps.moveIn)}: {app.moveInDate} · {app.durationMonths} {tr(t.myApps.months)}
                         </p>
@@ -223,7 +223,7 @@ export function OwnerDashboard() {
                   <div key={rental.id} className="bg-card border border-border rounded-xl p-4" data-testid={`row-rental-${rental.id}`}>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="font-medium truncate">{rental.listingTitle}</p>
+                        <p className="font-medium truncate">{trText(rental.listingTitle, lang)}</p>
                         <p className="text-sm text-muted-foreground">{tr(t.owner.tenant)}: {rental.tenantName}</p>
                         <p className="text-xs text-muted-foreground mt-1">
                           {rental.startDate} → {rental.endDate}

@@ -201,7 +201,7 @@ export function Admin() {
                       <tr key={app.id} className="hover:bg-muted/30 transition-colors">
                         <td className="px-4 py-3 font-mono text-xs">{app.id}</td>
                         <td className="px-4 py-3 font-medium">{app.tenantName}</td>
-                        <td className="px-4 py-3 text-muted-foreground max-w-[200px] truncate">{app.listingTitle}</td>
+                        <td className="px-4 py-3 text-muted-foreground max-w-[200px] truncate">{trText(app.listingTitle, lang)}</td>
                         <td className="px-4 py-3 text-muted-foreground">{app.moveInDate}</td>
                         <td className="px-4 py-3">{app.durationMonths} {tr(t.myApps.months)}</td>
                         <td className="px-4 py-3">
