@@ -901,6 +901,10 @@ components:
           type: integer
         tenantName:
           type: string
+        tenantEmail:
+          type: string
+        tenantPhone:
+          type: string
         tenantVerified:
           type: boolean
         listingTitle:

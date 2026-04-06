@@ -39,7 +39,7 @@ export function Register() {
     }
 
     setLoading(true);
-    const result = await registerUser({ name, email, password, role, phone: phone || undefined });
+    const result = await registerUser({ name, email, password, role, phone });
     setLoading(false);
 
     if (result.ok) {
@@ -134,6 +134,7 @@ export function Register() {
                 value={phone}
                 onChange={e => setPhone(e.target.value)}
                 placeholder="+998 XX XXX XX XX"
+                required
                 className="mt-1"
                 data-testid="input-register-phone"
               />

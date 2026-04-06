@@ -12,6 +12,8 @@ export interface Application {
   listingId: number;
   tenantId: number;
   tenantName?: string;
+  tenantEmail?: string;
+  tenantPhone?: string;
   tenantVerified?: boolean;
   listingTitle?: string;
   district?: string;

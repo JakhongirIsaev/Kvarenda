@@ -9,8 +9,8 @@ const router = Router();
 router.post("/register", async (req, res) => {
   const { name, email, password, role, phone } = req.body;
 
-  if (!name || !email || !password || !role) {
-    return res.status(400).json({ error: "Name, email, password, and role are required" });
+  if (!name || !email || !password || !role || !phone) {
+    return res.status(400).json({ error: "Name, email, password, role, and phone are required" });
   }
 
   if (!["tenant", "owner"].includes(role)) {

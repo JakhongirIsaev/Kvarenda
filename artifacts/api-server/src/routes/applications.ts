@@ -21,11 +21,18 @@ async function enrichApplication(app: typeof applicationsTable.$inferSelect) {
     district: listing?.district ?? "",
     priceUzs: listing?.priceUzs ?? 0,
     tenantName: tenant?.name ?? "Unknown",
+    tenantEmail: tenant?.email ?? "",
+    tenantPhone: tenant?.phone ?? "",
     tenantVerified: tenant?.verified ?? false,
   };
 }
 
 router.get("/", async (req, res) => {
+  const sessionUserId = (req.session as any)?.userId;
+  if (!sessionUserId) {
+    return res.status(401).json({ error: "Authentication required" });
+  }
+
   const query = GetApplicationsQueryParams.parse(req.query);
   const conditions = [];
 

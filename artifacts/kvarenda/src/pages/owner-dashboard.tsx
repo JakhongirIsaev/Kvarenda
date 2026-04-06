@@ -163,7 +163,7 @@ export function OwnerDashboard() {
                 {applications.map((app) => (
                   <div key={app.id} className="bg-card border border-border rounded-xl p-4" data-testid={`row-app-${app.id}`}>
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <Badge variant="outline" className={
                             app.status === "pending" ? "bg-yellow-50 text-yellow-700 border-yellow-200" :
@@ -173,13 +173,32 @@ export function OwnerDashboard() {
                             {app.status}
                           </Badge>
                         </div>
-                        <p className="font-medium">{app.tenantName}</p>
+                        <p className="font-medium text-base">{app.tenantName}</p>
                         <p className="text-sm text-muted-foreground truncate">{trText(app.listingTitle, lang)}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {tr(t.myApps.moveIn)}: {app.moveInDate} · {app.durationMonths} {tr(t.myApps.months)}
-                        </p>
+                        <div className="mt-2 space-y-1 text-sm">
+                          {(app as any).tenantPhone && (
+                            <p className="text-muted-foreground">
+                              <span className="font-medium text-foreground">{tr(t.owner.phone)}:</span> {(app as any).tenantPhone}
+                            </p>
+                          )}
+                          {(app as any).tenantEmail && (
+                            <p className="text-muted-foreground">
+                              <span className="font-medium text-foreground">{tr(t.owner.email)}:</span> {(app as any).tenantEmail}
+                            </p>
+                          )}
+                          <p className="text-muted-foreground">
+                            <span className="font-medium text-foreground">{tr(t.myApps.moveIn)}:</span> {app.moveInDate} · {app.durationMonths} {tr(t.myApps.months)}
+                          </p>
+                          {app.purpose && (
+                            <p className="text-muted-foreground">
+                              <span className="font-medium text-foreground">{tr(t.owner.purpose)}:</span> {app.purpose}
+                            </p>
+                          )}
+                        </div>
                         {app.message && (
-                          <p className="text-sm text-muted-foreground mt-2 italic">"{app.message}"</p>
+                          <div className="mt-3 bg-muted/50 rounded-lg p-3">
+                            <p className="text-sm italic text-muted-foreground">"{app.message}"</p>
+                          </div>
                         )}
                       </div>
                       {app.status === "pending" && (

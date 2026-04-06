@@ -1,9 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useLocation, Link } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus, X, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -31,6 +31,7 @@ const formSchema = z.object({
   deposit: z.string().optional(),
   amenities: z.array(z.string()).optional(),
   rules: z.string().optional(),
+  photos: z.array(z.string()).optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -50,6 +51,7 @@ export function OwnerListingForm() {
 
   const createListing = useCreateListing();
   const updateListing = useUpdateListing();
+  const [photoInput, setPhotoInput] = useState("");
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -66,6 +68,7 @@ export function OwnerListingForm() {
       deposit: "",
       amenities: [],
       rules: "",
+      photos: [],
     },
   });
 
@@ -84,6 +87,7 @@ export function OwnerListingForm() {
         deposit: existing.deposit ? String(existing.deposit) : "",
         amenities: existing.amenities ?? [],
         rules: existing.rules ?? "",
+        photos: existing.photos ?? [],
       });
     }
   }, [existing, isEditing]);
@@ -104,6 +108,7 @@ export function OwnerListingForm() {
       plan: "basic" as const,
       amenities: values.amenities,
       rules: values.rules,
+      photos: (values.photos ?? []).filter(Boolean),
       published: true,
       status: "active" as const,
     };
@@ -131,6 +136,18 @@ export function OwnerListingForm() {
   }
 
   const selectedAmenities = form.watch("amenities") ?? [];
+  const photos = form.watch("photos") ?? [];
+
+  const addPhoto = () => {
+    const url = photoInput.trim();
+    if (!url) return;
+    form.setValue("photos", [...photos, url]);
+    setPhotoInput("");
+  };
+
+  const removePhoto = (index: number) => {
+    form.setValue("photos", photos.filter((_, i) => i !== index));
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -160,6 +177,40 @@ export function OwnerListingForm() {
                   </FormItem>
                 )}
               />
+
+              <div>
+                <p className="text-sm font-medium mb-3">{tr(t.ownerForm.photos)}</p>
+                {photos.length > 0 && (
+                  <div className="grid grid-cols-3 gap-2 mb-3">
+                    {photos.map((url, i) => (
+                      <div key={i} className="relative group rounded-lg overflow-hidden border border-border aspect-video bg-muted">
+                        <img src={url} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = ""; (e.target as HTMLImageElement).alt = "Invalid URL"; }} />
+                        <button
+                          type="button"
+                          onClick={() => removePhoto(i)}
+                          className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="flex gap-2">
+                  <Input
+                    placeholder={tr(t.ownerForm.photoUrlPlaceholder)}
+                    value={photoInput}
+                    onChange={(e) => setPhotoInput(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addPhoto(); } }}
+                    data-testid="input-photo-url"
+                  />
+                  <Button type="button" variant="outline" size="sm" onClick={addPhoto} className="flex-shrink-0 gap-1" data-testid="button-add-photo">
+                    <Plus className="w-4 h-4" />
+                    {tr(t.ownerForm.addPhoto)}
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">{tr(t.ownerForm.photoHint)}</p>
+              </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <FormField
