@@ -384,12 +384,39 @@ export function OwnerListingForm() {
                 </div>
               </div>
 
+              <div>
+                <p className="text-sm font-medium mb-3">{tr(t.ownerForm.houseRules)}</p>
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  {[
+                    { key: "children", label: { en: "Children allowed", ru: "Можно с детьми", uz: "Bolalar bilan mumkin" } },
+                    { key: "pets", label: { en: "Pets allowed", ru: "Можно с животными", uz: "Hayvonlar bilan mumkin" } },
+                    { key: "smoking", label: { en: "Smoking allowed", ru: "Можно курить", uz: "Chekish mumkin" } },
+                    { key: "parties", label: { en: "Parties allowed", ru: "Вечеринки разрешены", uz: "Ziyofatlar mumkin" } },
+                  ].map(rule => (
+                    <div key={rule.key} className="flex items-center gap-2">
+                      <Checkbox
+                        id={`rule-${rule.key}`}
+                        checked={(form.watch("rules") ?? "").includes(`${rule.key}:yes`)}
+                        onCheckedChange={(checked) => {
+                          const current = form.getValues("rules") ?? "";
+                          const parts = current.split("|").filter(p => p && !p.startsWith(`${rule.key}:`));
+                          if (checked) parts.push(`${rule.key}:yes`);
+                          else parts.push(`${rule.key}:no`);
+                          form.setValue("rules", parts.join("|"));
+                        }}
+                      />
+                      <label htmlFor={`rule-${rule.key}`} className="text-sm cursor-pointer">{rule.label[lang] || rule.label.en}</label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               <FormField
                 control={form.control}
                 name="rules"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{tr(t.ownerForm.houseRules)}</FormLabel>
+                    <FormLabel>{tr(t.ownerForm.additionalRules)}</FormLabel>
                     <FormControl>
                       <Textarea rows={3} placeholder={tr(t.ownerForm.rulesPlaceholder)} {...field} data-testid="textarea-rules" />
                     </FormControl>

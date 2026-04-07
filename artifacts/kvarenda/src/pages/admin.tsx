@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { BarChart3, Users, Building, DollarSign, Shield, Eye, CheckCircle2, XCircle, Clock, TrendingUp } from "lucide-react";
+import { BarChart3, Users, Building, DollarSign, Shield, Eye, CheckCircle2, XCircle, Clock, TrendingUp, Ticket, Umbrella } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   useGetDashboardStats, useGetUsers, useGetListings, useGetPayments, useGetApplications,
   getGetDashboardStatsQueryKey, getGetUsersQueryKey, getGetListingsQueryKey, getGetPaymentsQueryKey, getGetApplicationsQueryKey,
@@ -11,24 +12,75 @@ import {
 import { useRole } from "@/lib/role-context";
 import { useI18n, useT } from "@/lib/i18n";
 import { formatUzs, formatDate, trText } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 
 export function Admin() {
   const { role } = useRole();
   const { t, lang } = useI18n();
   const { tr } = useT();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [tickets, setTickets] = useState<any[]>([]);
 
   const isAdmin = role === "admin";
   const { data: stats, isLoading: statsLoading } = useGetDashboardStats({ query: { queryKey: getGetDashboardStatsQueryKey(), enabled: isAdmin } });
   const { data: usersData } = useGetUsers({ query: { queryKey: getGetUsersQueryKey(), enabled: isAdmin } });
-  const { data: listingsData } = useGetListings({ limit: 50 }, { query: { queryKey: getGetListingsQueryKey({ limit: 50 }), enabled: isAdmin } });
+  const { data: listingsData, refetch: refetchListings } = useGetListings({ limit: 50 }, { query: { queryKey: getGetListingsQueryKey({ limit: 50 }), enabled: isAdmin } });
   const { data: paymentsData } = useGetPayments(undefined, { query: { queryKey: getGetPaymentsQueryKey(), enabled: isAdmin } });
   const { data: applicationsData } = useGetApplications(undefined, { query: { queryKey: getGetApplicationsQueryKey(), enabled: isAdmin } });
+
+  // Fetch tickets
+  useState(() => {
+    if (isAdmin) {
+      fetch("/api/tickets").then(r => r.json()).then(setTickets).catch(() => {});
+    }
+  });
 
   const users = usersData ?? [];
   const listings = listingsData?.listings ?? [];
   const payments = paymentsData ?? [];
   const applications = applicationsData ?? [];
+
+  const moderateListing = async (id: number, action: "approve" | "reject") => {
+    const res = await fetch(`/api/listings/${id}/moderate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ action }),
+    });
+    if (res.ok) {
+      toast({ title: action === "approve" ? "Listing approved" : "Listing rejected" });
+      refetchListings();
+    }
+  };
+
+  const updateInsurance = async (id: number, insuranceStatus: string) => {
+    const res = await fetch(`/api/listings/${id}/insurance`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ insuranceStatus }),
+    });
+    if (res.ok) {
+      toast({ title: "Insurance status updated" });
+      refetchListings();
+    }
+  };
+
+  const updateTicketStatus = async (id: number, status: string) => {
+    const res = await fetch(`/api/tickets/${id}/status`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ status }),
+    });
+    if (res.ok) {
+      toast({ title: "Ticket updated" });
+      fetch("/api/tickets").then(r => r.json()).then(setTickets).catch(() => {});
+    }
+  };
 
   if (role !== "admin") {
     return (
@@ -84,6 +136,7 @@ export function Admin() {
               <TabsTrigger value="listings" data-testid="tab-listings" className="text-xs sm:text-sm">{tr(t.listings.listingsCount)} ({listings.length})</TabsTrigger>
               <TabsTrigger value="applications" data-testid="tab-applications" className="text-xs sm:text-sm">{tr(t.nav.applications)} ({applications.length})</TabsTrigger>
               <TabsTrigger value="payments" data-testid="tab-payments" className="text-xs sm:text-sm">{tr(t.admin.payments)} ({payments.length})</TabsTrigger>
+              <TabsTrigger value="tickets" data-testid="tab-tickets" className="text-xs sm:text-sm">Tickets ({tickets.length})</TabsTrigger>
             </TabsList>
           </div>
 
@@ -167,11 +220,36 @@ export function Admin() {
                         </td>
                         <td className="px-4 py-3 text-muted-foreground">{listing.ownerName}</td>
                         <td className="px-4 py-3">
-                          <Link href={`/listings/${listing.id}`}>
-                            <Button size="sm" variant="ghost" className="h-7 text-xs gap-1">
-                              <Eye className="w-3 h-3" /> {tr(t.admin.view)}
-                            </Button>
-                          </Link>
+                          <div className="flex items-center gap-1 flex-wrap">
+                            <Link href={`/listings/${listing.id}`}>
+                              <Button size="sm" variant="ghost" className="h-7 text-xs gap-1">
+                                <Eye className="w-3 h-3" />
+                              </Button>
+                            </Link>
+                            {listing.status === "pending_moderation" && (
+                              <>
+                                <Button size="sm" variant="default" className="h-7 text-xs" onClick={() => moderateListing(listing.id, "approve")}>
+                                  <CheckCircle2 className="w-3 h-3" />
+                                </Button>
+                                <Button size="sm" variant="destructive" className="h-7 text-xs" onClick={() => moderateListing(listing.id, "reject")}>
+                                  <XCircle className="w-3 h-3" />
+                                </Button>
+                              </>
+                            )}
+                            <Select onValueChange={(v) => updateInsurance(listing.id, v)} value={listing.insuranceStatus ?? "none"}>
+                              <SelectTrigger className="h-7 w-[100px] text-xs">
+                                <Umbrella className="w-3 h-3 mr-1" />
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="none">None</SelectItem>
+                                <SelectItem value="available">Available</SelectItem>
+                                <SelectItem value="in_manual_processing">Processing</SelectItem>
+                                <SelectItem value="insured">Insured</SelectItem>
+                                <SelectItem value="expired">Expired</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -268,6 +346,65 @@ export function Admin() {
                         </td>
                       </tr>
                     ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="tickets">
+            <div className="bg-card border border-border rounded-xl overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/50 border-b border-border">
+                    <tr>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">ID</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">User</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Category</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Subject</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Status</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {tickets.map((ticket: any) => (
+                      <tr key={ticket.id} className="hover:bg-muted/30 transition-colors">
+                        <td className="px-4 py-3 font-mono text-xs">{ticket.id}</td>
+                        <td className="px-4 py-3 font-medium">{ticket.userName}</td>
+                        <td className="px-4 py-3">
+                          <Badge variant="outline">{ticket.category}</Badge>
+                        </td>
+                        <td className="px-4 py-3 max-w-[200px] truncate">{ticket.subject}</td>
+                        <td className="px-4 py-3">
+                          <Badge variant="outline" className={
+                            ticket.status === "open" ? "text-yellow-700 border-yellow-200 bg-yellow-50" :
+                            ticket.status === "in_progress" ? "text-blue-700 border-blue-200 bg-blue-50" :
+                            ticket.status === "resolved" ? "text-green-700 border-green-200 bg-green-50" :
+                            "text-gray-600"
+                          }>
+                            {ticket.status}
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-3">
+                          <Select onValueChange={(v) => updateTicketStatus(ticket.id, v)} value={ticket.status}>
+                            <SelectTrigger className="h-7 w-[120px] text-xs">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="open">Open</SelectItem>
+                              <SelectItem value="in_progress">In Progress</SelectItem>
+                              <SelectItem value="resolved">Resolved</SelectItem>
+                              <SelectItem value="closed">Closed</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </td>
+                      </tr>
+                    ))}
+                    {tickets.length === 0 && (
+                      <tr>
+                        <td colSpan={6} className="px-4 py-10 text-center text-muted-foreground">No tickets yet</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>

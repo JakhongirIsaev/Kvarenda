@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { Plus, Home, Users, DollarSign, Building, FileText } from "lucide-react";
+import { Plus, Home, Users, DollarSign, Building, FileText, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -18,12 +18,27 @@ export function OwnerDashboard() {
 
   const { data: dashboard, isLoading } = useGetOwnerDashboard(userId);
   const { data: applications, refetch: refetchApps } = useGetApplications({ ownerId: userId });
-  const { data: listingsData } = useGetListings({ ownerId: userId, limit: 50 });
+  const { data: listingsData, refetch: refetchListings } = useGetListings({ ownerId: userId, limit: 50 });
   const { data: rentalsData } = useGetRentals({ ownerId: userId });
   const updateApp = useUpdateApplicationStatus();
 
   const listings = listingsData?.listings ?? [];
   const rentals = rentalsData ?? [];
+
+  const togglePublish = async (id: number, currentlyPublished: boolean) => {
+    try {
+      await fetch(`/api/listings/${id}/publish`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ published: !currentlyPublished }),
+      });
+      refetchListings();
+      toast({ title: currentlyPublished ? tr(t.owner.unpublished) : tr(t.owner.published) });
+    } catch {
+      toast({ title: tr(t.common.error), variant: "destructive" });
+    }
+  };
 
   const handleApprove = async (id: number) => {
     try {
@@ -138,7 +153,16 @@ export function OwnerDashboard() {
                         </div>
                         <p className="text-sm text-primary font-semibold">{formatUzs(listing.priceUzs)}{tr(t.common.perMonth)}</p>
                       </div>
-                      <div className="flex items-center gap-2 flex-shrink-0">
+                      <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                        <Button
+                          size="sm"
+                          variant={listing.published ? "outline" : "default"}
+                          className="h-8 px-2 sm:px-3 gap-1 text-xs"
+                          onClick={() => togglePublish(listing.id, listing.published)}
+                        >
+                          {listing.published ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                          <span className="hidden sm:inline">{listing.published ? tr(t.owner.unpublish) : tr(t.owner.publish)}</span>
+                        </Button>
                         <Link href={`/listings/${listing.id}`}>
                           <Button size="sm" variant="ghost" className="h-8 px-2 sm:px-3">{tr(t.common.view)}</Button>
                         </Link>

@@ -43,7 +43,7 @@ router.get("/", async (req, res) => {
 
   if (query.tenantId !== undefined) conditions.push(eq(rentalsTable.tenantId, query.tenantId));
   if (query.ownerId !== undefined) conditions.push(eq(rentalsTable.ownerId, query.ownerId));
-  if (query.status) conditions.push(eq(rentalsTable.status, query.status as "active" | "completed" | "terminated"));
+  if (query.status) conditions.push(eq(rentalsTable.status, query.status as "pending_activation" | "active" | "completed" | "terminated"));
 
   const rentals = await db.select().from(rentalsTable).where(conditions.length > 0 ? and(...conditions) : undefined).orderBy(rentalsTable.createdAt);
   const enriched = await Promise.all(rentals.map(enrichRental));

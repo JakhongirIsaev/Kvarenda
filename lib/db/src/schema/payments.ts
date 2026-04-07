@@ -3,7 +3,7 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
 export const paymentMethodEnum = pgEnum("payment_method", ["online", "cash"]);
-export const paymentStatusEnum = pgEnum("payment_status", ["pending", "completed", "failed", "declared"]);
+export const paymentStatusEnum = pgEnum("payment_status", ["pending", "completed", "failed", "declared", "cancelled"]);
 
 export const paymentsTable = pgTable("payments", {
   id: serial("id").primaryKey(),

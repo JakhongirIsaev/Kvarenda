@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
-import { Home, Calendar, FileText, CreditCard, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { Home, Calendar, FileText, CreditCard, CheckCircle2, Clock, AlertCircle, MessageSquare, Send } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useGetTenantDashboard, useGetPayments, useCreatePayment } from "@workspace/api-client-react";
 import { useRole } from "@/lib/role-context";
@@ -15,8 +18,51 @@ export function MyRentals() {
   const { userId } = useRole();
   const { toast } = useToast();
   const [paying, setPaying] = useState(false);
+  const [tickets, setTickets] = useState<any[]>([]);
+  const [showTicketForm, setShowTicketForm] = useState(false);
+  const [ticketSubject, setTicketSubject] = useState("");
+  const [ticketDesc, setTicketDesc] = useState("");
+  const [ticketCategory, setTicketCategory] = useState("other");
+  const [submittingTicket, setSubmittingTicket] = useState(false);
   const { t, lang } = useI18n();
   const { tr } = useT();
+
+  useEffect(() => {
+    if (userId) {
+      fetch(`/api/tickets?userId=${userId}`).then(r => r.json()).then(setTickets).catch(() => {});
+    }
+  }, [userId]);
+
+  const submitTicket = async () => {
+    if (!ticketSubject || !ticketDesc) return;
+    setSubmittingTicket(true);
+    try {
+      const res = await fetch("/api/tickets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          userId,
+          rentalId: dashboard?.currentRental?.id,
+          category: ticketCategory,
+          subject: ticketSubject,
+          description: ticketDesc,
+        }),
+      });
+      if (res.ok) {
+        toast({ title: tr(t.rental.ticketCreated) });
+        setTicketSubject("");
+        setTicketDesc("");
+        setShowTicketForm(false);
+        const updated = await fetch(`/api/tickets?userId=${userId}`).then(r => r.json());
+        setTickets(updated);
+      }
+    } catch {
+      toast({ title: tr(t.common.error), variant: "destructive" });
+    } finally {
+      setSubmittingTicket(false);
+    }
+  };
 
   const { data: dashboard, isLoading: dashboardLoading, refetch: refetchDashboard } = useGetTenantDashboard(userId);
   const rental = dashboard?.currentRental;
@@ -195,6 +241,73 @@ export function MyRentals() {
                       </div>
                     );
                   })}
+                </div>
+              )}
+            </div>
+            {/* Support Tickets */}
+            <div className="bg-card border border-border rounded-2xl overflow-hidden">
+              <div className="p-5 border-b border-border flex items-center justify-between">
+                <h3 className="font-semibold text-foreground flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4" />
+                  {tr(t.rental.support)}
+                </h3>
+                <Button size="sm" variant="outline" className="h-8 text-xs" onClick={() => setShowTicketForm(!showTicketForm)}>
+                  {showTicketForm ? tr(t.common.cancel) : tr(t.rental.newTicket)}
+                </Button>
+              </div>
+
+              {showTicketForm && (
+                <div className="p-5 border-b border-border space-y-3 bg-muted/30">
+                  <Select value={ticketCategory} onValueChange={setTicketCategory}>
+                    <SelectTrigger className="h-9 text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="payment">{tr(t.rental.catPayment)}</SelectItem>
+                      <SelectItem value="property">{tr(t.rental.catProperty)}</SelectItem>
+                      <SelectItem value="contract">{tr(t.rental.catContract)}</SelectItem>
+                      <SelectItem value="dispute">{tr(t.rental.catDispute)}</SelectItem>
+                      <SelectItem value="other">{tr(t.rental.catOther)}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    placeholder={tr(t.rental.ticketSubject)}
+                    value={ticketSubject}
+                    onChange={e => setTicketSubject(e.target.value)}
+                    className="h-9 text-sm"
+                  />
+                  <Textarea
+                    placeholder={tr(t.rental.ticketDesc)}
+                    value={ticketDesc}
+                    onChange={e => setTicketDesc(e.target.value)}
+                    rows={3}
+                    className="text-sm"
+                  />
+                  <Button size="sm" disabled={submittingTicket || !ticketSubject || !ticketDesc} onClick={submitTicket} className="gap-1">
+                    <Send className="w-3 h-3" />
+                    {submittingTicket ? tr(t.rental.submitting) : tr(t.rental.submitTicket)}
+                  </Button>
+                </div>
+              )}
+
+              {tickets.length === 0 ? (
+                <div className="p-10 text-center text-muted-foreground text-sm">{tr(t.rental.noTickets)}</div>
+              ) : (
+                <div className="divide-y divide-border">
+                  {tickets.map((ticket: any) => (
+                    <div key={ticket.id} className="p-4 flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-sm">{ticket.subject}</p>
+                        <p className="text-xs text-muted-foreground">{ticket.category} · {new Date(ticket.createdAt).toLocaleDateString()}</p>
+                      </div>
+                      <Badge variant="outline" className={
+                        ticket.status === "open" ? "text-yellow-700 border-yellow-200 bg-yellow-50" :
+                        ticket.status === "resolved" ? "text-green-700 border-green-200 bg-green-50" :
+                        ticket.status === "in_progress" ? "text-blue-700 border-blue-200 bg-blue-50" :
+                        "text-gray-600"
+                      }>{ticket.status}</Badge>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

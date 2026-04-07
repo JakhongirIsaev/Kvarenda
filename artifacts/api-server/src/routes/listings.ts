@@ -129,7 +129,47 @@ router.post("/:id/publish", async (req, res) => {
   const body = PublishListingBody.parse(req.body);
   const [listing] = await db
     .update(listingsTable)
-    .set({ published: body.published })
+    .set({
+      published: body.published,
+      status: body.published ? "active" : "paused",
+    } as Partial<typeof listingsTable.$inferInsert>)
+    .where(eq(listingsTable.id, id))
+    .returning();
+  if (!listing) return res.status(404).json({ error: "Not found" });
+  res.json(listing);
+});
+
+// Admin: moderate listing
+router.post("/:id/moderate", async (req, res) => {
+  const id = Number(req.params.id);
+  const { action } = req.body as { action: "approve" | "reject" };
+  if (!["approve", "reject"].includes(action)) {
+    return res.status(400).json({ error: "action must be approve or reject" });
+  }
+  const newStatus = action === "approve" ? "active" : "draft";
+  const [listing] = await db
+    .update(listingsTable)
+    .set({
+      status: newStatus,
+      published: action === "approve",
+      verified: action === "approve",
+    } as Partial<typeof listingsTable.$inferInsert>)
+    .where(eq(listingsTable.id, id))
+    .returning();
+  if (!listing) return res.status(404).json({ error: "Not found" });
+  res.json(listing);
+});
+
+// Admin: update insurance status
+router.put("/:id/insurance", async (req, res) => {
+  const id = Number(req.params.id);
+  const { insuranceStatus } = req.body as { insuranceStatus: string };
+  const [listing] = await db
+    .update(listingsTable)
+    .set({
+      insuranceStatus,
+      hasInsurance: ["insured", "available", "in_manual_processing"].includes(insuranceStatus),
+    } as Partial<typeof listingsTable.$inferInsert>)
     .where(eq(listingsTable.id, id))
     .returning();
   if (!listing) return res.status(404).json({ error: "Not found" });

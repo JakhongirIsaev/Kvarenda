@@ -105,7 +105,11 @@ router.put("/:id/status", async (req, res) => {
         depositUzs: listing.deposit ?? 0,
         serviceFeePercent: 5,
         status: "pending_signatures",
-        terms: `Standard rental agreement for ${listing.title}. The tenant agrees to pay ${listing.priceUzs.toLocaleString()} UZS per month plus a 5% platform service fee.`,
+        terms: JSON.stringify({
+          en: `Rental agreement for ${listing.address}. Monthly rent: ${listing.priceUzs.toLocaleString()} UZS + 5% platform service fee. Deposit: ${(listing.deposit ?? 0).toLocaleString()} UZS. Duration: ${app.durationMonths} months.`,
+          ru: `Договор аренды по адресу ${listing.address}. Ежемесячная арендная плата: ${listing.priceUzs.toLocaleString()} UZS + 5% сервисный сбор платформы. Депозит: ${(listing.deposit ?? 0).toLocaleString()} UZS. Срок: ${app.durationMonths} мес.`,
+          uz: `${listing.address} manzili bo'yicha ijara shartnomasi. Oylik ijara: ${listing.priceUzs.toLocaleString()} UZS + 5% platforma xizmat to'lovi. Depozit: ${(listing.deposit ?? 0).toLocaleString()} UZS. Muddat: ${app.durationMonths} oy.`,
+        }),
       });
     }
   }

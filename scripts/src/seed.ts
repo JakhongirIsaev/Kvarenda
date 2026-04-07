@@ -8,17 +8,22 @@ import {
   paymentsTable,
 } from "@workspace/db";
 import { sql } from "drizzle-orm";
+import bcrypt from "bcryptjs";
 
 async function seed() {
   console.log("Seeding database...");
 
   await db.execute(sql`TRUNCATE payments, rentals, contracts, applications, listings, users RESTART IDENTITY CASCADE`);
 
+  // All seed users use password: password123
+  const hashedPassword = await bcrypt.hash("password123", 10);
+
   // Users
   const users = await db.insert(usersTable).values([
     {
       name: "Sardor Yusupov",
       email: "sardor@example.com",
+      password: hashedPassword,
       phone: "+998901234567",
       role: "tenant",
       verified: true,
@@ -28,6 +33,7 @@ async function seed() {
     {
       name: "Dilnoza Karimova",
       email: "dilnoza@example.com",
+      password: hashedPassword,
       phone: "+998907654321",
       role: "owner",
       verified: true,
@@ -37,6 +43,7 @@ async function seed() {
     {
       name: "Jasur Toshmatov",
       email: "jasur@example.com",
+      password: hashedPassword,
       phone: "+998901112233",
       role: "owner",
       verified: true,
@@ -46,6 +53,7 @@ async function seed() {
     {
       name: "Admin Kvarenda",
       email: "admin@kvarenda.uz",
+      password: hashedPassword,
       phone: "+998990000001",
       role: "admin",
       verified: true,
@@ -55,6 +63,7 @@ async function seed() {
     {
       name: "Malika Rahimova",
       email: "malika@example.com",
+      password: hashedPassword,
       phone: "+998905556677",
       role: "tenant",
       verified: true,
@@ -64,6 +73,7 @@ async function seed() {
     {
       name: "Bobur Mirzayev",
       email: "bobur@example.com",
+      password: hashedPassword,
       phone: "+998901234000",
       role: "owner",
       verified: false,

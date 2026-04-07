@@ -1,10 +1,12 @@
 import express, { type Express } from "express";
 import cors from "cors";
 import session from "express-session";
+import connectPgSimple from "connect-pg-simple";
 import pinoHttp from "pino-http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { existsSync } from "node:fs";
+import { pool } from "@workspace/db";
 import router from "./routes";
 import authRouter from "./routes/auth";
 import { logger } from "./lib/logger";
@@ -41,8 +43,10 @@ if (isProd) {
   app.set("trust proxy", 1);
 }
 
+const PgStore = connectPgSimple(session);
 app.use(session({
   name: "kvarenda_sid",
+  store: isProd ? new PgStore({ pool, createTableIfMissing: true }) : undefined,
   secret: process.env.SESSION_SECRET || (isProd ? (() => { throw new Error("SESSION_SECRET required in production"); })() : "kvarenda-dev-secret-2026"),
   resave: false,
   saveUninitialized: false,

@@ -3,8 +3,8 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
 export const listingPlanEnum = pgEnum("listing_plan", ["basic", "pro"]);
-export const listingStatusEnum = pgEnum("listing_status", ["draft", "pending_moderation", "active", "inactive"]);
-export const insuranceStatusEnum = pgEnum("insurance_status", ["none", "available", "insured"]);
+export const listingStatusEnum = pgEnum("listing_status", ["draft", "pending_moderation", "active", "paused", "archived"]);
+export const insuranceStatusEnum = pgEnum("insurance_status", ["none", "available", "in_manual_processing", "insured", "expired"]);
 
 export const listingsTable = pgTable("listings", {
   id: serial("id").primaryKey(),

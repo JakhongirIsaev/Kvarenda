@@ -1,5 +1,6 @@
-import { useParams } from "wouter";
-import { ArrowLeft, FileText, CheckCircle2, Download, Shield } from "lucide-react";
+import { useState } from "react";
+import { useParams, useLocation } from "wouter";
+import { ArrowLeft, FileText, CheckCircle2, Download, Shield, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -12,8 +13,10 @@ import { useI18n, useT } from "@/lib/i18n";
 
 export function ContractView() {
   const { id } = useParams<{ id: string }>();
-  const { role } = useRole();
+  const [, setLocation] = useLocation();
+  const { role, userId } = useRole();
   const { toast } = useToast();
+  const [payingFirst, setPayingFirst] = useState(false);
   const { t, lang } = useI18n();
   const { tr } = useT();
 
@@ -224,6 +227,59 @@ export function ContractView() {
             <div className="bg-muted/50 rounded-lg p-3 text-xs text-center text-muted-foreground">
               {tr(t.contract.legalFooter)} {tr(t.contract.contractId)} ID: {contract.id}
             </div>
+
+            {fullyExecuted && role === "tenant" && (
+              <div className="bg-primary/5 border border-primary/20 rounded-xl p-5 text-center">
+                <CreditCard className="w-8 h-8 text-primary mx-auto mb-3" />
+                <h3 className="font-semibold mb-1">{tr(t.contract.firstPaymentTitle)}</h3>
+                <p className="text-sm text-muted-foreground mb-3">{tr(t.contract.firstPaymentDesc)}</p>
+                <div className="bg-card rounded-lg p-3 mb-4 text-sm space-y-1">
+                  <div className="flex justify-between">
+                    <span>{tr(t.contract.monthlyRent)}</span>
+                    <span className="font-medium">{formatUzs(contract.monthlyRentUzs)}</span>
+                  </div>
+                  <div className="flex justify-between text-muted-foreground">
+                    <span>{tr(t.contract.serviceFee)}</span>
+                    <span>{formatUzs(Math.round(contract.monthlyRentUzs * 0.05))}</span>
+                  </div>
+                  <Separator />
+                  <div className="flex justify-between font-bold">
+                    <span>{tr(t.contract.totalDue)}</span>
+                    <span className="text-primary">{formatUzs(totalMonthly)}</span>
+                  </div>
+                </div>
+                <Button
+                  className="w-full h-12 text-base gap-2"
+                  disabled={payingFirst}
+                  onClick={async () => {
+                    setPayingFirst(true);
+                    try {
+                      const res = await fetch("/api/payments/first-payment", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        credentials: "include",
+                        body: JSON.stringify({ contractId: contract.id, tenantId: userId, method: "online" }),
+                      });
+                      if (res.ok) {
+                        toast({ title: tr(t.contract.paymentSuccess), description: tr(t.contract.rentalActivated) });
+                        setLocation("/my/rental");
+                      } else {
+                        const data = await res.json();
+                        toast({ title: tr(t.common.error), description: data.error, variant: "destructive" });
+                      }
+                    } catch {
+                      toast({ title: tr(t.common.error), variant: "destructive" });
+                    } finally {
+                      setPayingFirst(false);
+                    }
+                  }}
+                  data-testid="button-first-payment"
+                >
+                  <CreditCard className="w-5 h-5" />
+                  {payingFirst ? tr(t.rental.processing) : tr(t.contract.payFirstMonth)}
+                </Button>
+              </div>
+            )}
           </div>
         </motion.div>
       </div>

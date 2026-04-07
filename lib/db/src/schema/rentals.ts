@@ -2,7 +2,7 @@ import { pgTable, serial, text, boolean, timestamp, integer, pgEnum } from "driz
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
-export const rentalStatusEnum = pgEnum("rental_status", ["active", "completed", "terminated"]);
+export const rentalStatusEnum = pgEnum("rental_status", ["pending_activation", "active", "completed", "terminated"]);
 
 export const rentalsTable = pgTable("rentals", {
   id: serial("id").primaryKey(),
