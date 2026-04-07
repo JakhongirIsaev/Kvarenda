@@ -56,8 +56,8 @@ export function MyApplications() {
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-1">
                         <Badge variant="outline" className={config.className}>{config.label}</Badge>
-                        {app.status === "approved" && (
-                          <Link href={`/my/contract/${app.id}`}>
+                        {app.status === "approved" && app.contractId && (
+                          <Link href={`/my/contract/${app.contractId}`}>
                             <Button size="sm" variant="outline" className="h-7 text-xs gap-1">
                               {tr(t.myApps.viewContract)} <ArrowRight className="w-3 h-3" />
                             </Button>

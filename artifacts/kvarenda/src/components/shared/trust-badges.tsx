@@ -39,7 +39,7 @@ export function InsuranceBadge() {
   const { t } = useI18n();
   const { tr } = useT();
   return (
-    <Badge variant="secondary" className="bg-orange-50 text-orange-700 hover:bg-orange-50 border-orange-200">
+    <Badge variant="secondary" className="bg-teal-50 text-teal-700 hover:bg-teal-50 border-teal-200">
       <Umbrella className="w-3 h-3 mr-1" />
       {tr(t.badges.insurance)}
     </Badge>

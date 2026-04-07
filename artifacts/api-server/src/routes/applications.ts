@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db } from "@workspace/db";
-import { applicationsTable, listingsTable, usersTable } from "@workspace/db";
+import { applicationsTable, listingsTable, usersTable, contractsTable } from "@workspace/db";
 import { eq, and } from "drizzle-orm";
 import {
   GetApplicationsQueryParams,
@@ -15,6 +15,8 @@ const router = Router();
 async function enrichApplication(app: typeof applicationsTable.$inferSelect) {
   const [listing] = await db.select().from(listingsTable).where(eq(listingsTable.id, app.listingId)).limit(1);
   const [tenant] = await db.select().from(usersTable).where(eq(usersTable.id, app.tenantId)).limit(1);
+  // Look up the contract for this application (if any)
+  const [contract] = await db.select({ id: contractsTable.id }).from(contractsTable).where(eq(contractsTable.applicationId, app.id)).limit(1);
   return {
     ...app,
     listingTitle: listing?.title ?? "",
@@ -24,6 +26,7 @@ async function enrichApplication(app: typeof applicationsTable.$inferSelect) {
     tenantEmail: tenant?.email ?? "",
     tenantPhone: tenant?.phone ?? "",
     tenantVerified: tenant?.verified ?? false,
+    contractId: contract?.id ?? null,
   };
 }
 
@@ -80,6 +83,33 @@ router.put("/:id/status", async (req, res) => {
     .where(eq(applicationsTable.id, id))
     .returning();
   if (!app) return res.status(404).json({ error: "Not found" });
+
+  // Auto-create contract when application is approved
+  if (body.status === "approved") {
+    const [listing] = await db.select().from(listingsTable).where(eq(listingsTable.id, app.listingId)).limit(1);
+    if (listing) {
+      const startDate = app.moveInDate;
+      const start = new Date(startDate);
+      const end = new Date(start);
+      end.setMonth(end.getMonth() + app.durationMonths);
+      const endDate = end.toISOString().split("T")[0];
+
+      await db.insert(contractsTable).values({
+        applicationId: app.id,
+        listingId: app.listingId,
+        tenantId: app.tenantId,
+        ownerId: listing.ownerId,
+        startDate,
+        endDate,
+        monthlyRentUzs: listing.priceUzs,
+        depositUzs: listing.deposit ?? 0,
+        serviceFeePercent: 5,
+        status: "pending_signatures",
+        terms: `Standard rental agreement for ${listing.title}. The tenant agrees to pay ${listing.priceUzs.toLocaleString()} UZS per month plus a 5% platform service fee.`,
+      });
+    }
+  }
+
   res.json(await enrichApplication(app));
 });
 
