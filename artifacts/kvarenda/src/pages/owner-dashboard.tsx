@@ -248,6 +248,14 @@ export function OwnerDashboard() {
                           </Button>
                         </div>
                       )}
+                      {app.status === "approved" && (app as any).contractId && (
+                        <Link href={`/my/contract/${(app as any).contractId}`}>
+                          <Button size="sm" variant="outline" className="h-8 gap-1 text-xs">
+                            <FileText className="w-3 h-3" />
+                            {tr(t.owner.viewContract)}
+                          </Button>
+                        </Link>
+                      )}
                     </div>
                   </div>
                 ))}

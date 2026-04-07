@@ -318,6 +318,7 @@ const translations = {
     unpublish: { en: "Unpublish", ru: "Снять", uz: "Olib tashlash" },
     published: { en: "Listing published!", ru: "Объявление опубликовано!", uz: "E'lon nashr etildi!" },
     unpublished: { en: "Listing unpublished.", ru: "Объявление снято с публикации.", uz: "E'lon olib tashlandi." },
+    viewContract: { en: "View Contract", ru: "Договор", uz: "Shartnoma" },
   },
   ownerForm: {
     editTitle: { en: "Edit Listing", ru: "Редактировать объявление", uz: "E'lonni tahrirlash" },
