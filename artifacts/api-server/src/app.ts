@@ -35,6 +35,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const isProd = process.env.NODE_ENV === "production";
+
+// Trust Railway's reverse proxy so secure cookies work over HTTPS
+if (isProd) {
+  app.set("trust proxy", 1);
+}
+
 app.use(session({
   name: "kvarenda_sid",
   secret: process.env.SESSION_SECRET || (isProd ? (() => { throw new Error("SESSION_SECRET required in production"); })() : "kvarenda-dev-secret-2026"),
