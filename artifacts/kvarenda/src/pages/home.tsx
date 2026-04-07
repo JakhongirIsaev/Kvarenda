@@ -113,9 +113,9 @@ export function Home() {
               </Link>
             </div>
             {isLoading ? (
-              <div className="h-[400px] md:h-[500px] bg-muted animate-pulse rounded-2xl" />
+              <div className="h-[450px] md:h-[550px] bg-muted animate-pulse rounded-2xl" />
             ) : (
-              <ListingMap listings={listings} height="400px" className="md:h-[500px]" />
+              <ListingMap listings={listings} height="450px" className="md:h-[550px]" />
             )}
           </motion.div>
         </div>

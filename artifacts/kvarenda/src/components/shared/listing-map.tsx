@@ -5,7 +5,7 @@ import { useI18n, useT } from "@/lib/i18n";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-const TASHKENT_CENTER: [number, number] = [41.3275, 69.2700];
+const TASHKENT_CENTER: [number, number] = [41.3111, 69.2797];
 const DEFAULT_ZOOM = 12;
 
 const TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";

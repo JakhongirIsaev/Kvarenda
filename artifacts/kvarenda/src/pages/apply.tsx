@@ -13,7 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useGetListing, useCreateApplication } from "@workspace/api-client-react";
 import { useRole } from "@/lib/role-context";
 import { useToast } from "@/hooks/use-toast";
-import { cn, formatUzs, trText } from "@/lib/utils";
+import { cn, formatUzs, trText, nowTashkent } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { getGetApplicationsQueryKey } from "@workspace/api-client-react";
 import { useI18n, useT } from "@/lib/i18n";
@@ -138,7 +138,7 @@ export function Apply() {
                                 field.onChange(format(date, "yyyy-MM-dd"));
                               }
                             }}
-                            disabled={(date) => date < new Date()}
+                            disabled={(date) => date < nowTashkent()}
                             autoFocus
                           />
                         </PopoverContent>
