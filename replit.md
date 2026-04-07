@@ -11,7 +11,7 @@ Full-stack apartment rental platform (Zillow/Zumper-inspired) built for the Uzbe
 - **5% service fee** - Hidden from tenants; owner sets base price, tenants see price×1.05 seamlessly; admin panel shows raw fee breakdown
 - **Authentication** - Session-based auth with bcrypt password hashing, login/register pages, role-based access (tenant/owner/admin); phone number required at registration
 - **Tashkent districts** - Yunusobod, Mirzo Ulugbek, Chilonzor, Shaykhontohur, Yakkasaroy, Uchtepa, Olmazor, Sergeli
-- **Interactive map** - Leaflet map with Mapbox tiles, custom price-bubble markers and popup cards
+- **Interactive map** - Leaflet map with OpenStreetMap tiles (free, no API key), custom price-bubble markers and popup cards
 - **Mobile responsive** - Hamburger menu, stacked layouts for mobile viewports
 - **Multi-language (i18n)** - English, Russian (Русский), Uzbek (O'zbek) with language switcher in header
 - **Persistent language** - Language choice saved to localStorage
@@ -42,7 +42,7 @@ Full-stack apartment rental platform (Zillow/Zumper-inspired) built for the Uzbe
 - **Package manager**: pnpm
 - **TypeScript version**: 5.9
 - **Frontend**: React + Vite (`@workspace/kvarenda`), Tailwind CSS, shadcn/ui, wouter, framer-motion, date-fns
-- **Map**: Leaflet + Mapbox raster tiles (VITE_MAPBOX_TOKEN env var; falls back to OSM if no token)
+- **Map**: Leaflet + OpenStreetMap tiles (free, no API key needed)
 - **API framework**: Express 5 (`@workspace/api-server`)
 - **Database**: PostgreSQL + Drizzle ORM (`@workspace/db`)
 - **API spec**: OpenAPI 3.0 (`lib/api-spec/openapi.yaml`)

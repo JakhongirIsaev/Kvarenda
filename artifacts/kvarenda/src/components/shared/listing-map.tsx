@@ -8,15 +8,8 @@ import "leaflet/dist/leaflet.css";
 const TASHKENT_CENTER: [number, number] = [41.3275, 69.2700];
 const DEFAULT_ZOOM = 12;
 
-const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || "";
-
-const TILE_URL = MAPBOX_TOKEN
-  ? `https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`
-  : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-
-const TILE_ATTRIBUTION = MAPBOX_TOKEN
-  ? '© <a href="https://www.mapbox.com/">Mapbox</a> © <a href="https://www.openstreetmap.org/copyright">OSM</a>'
-  : '© <a href="https://www.openstreetmap.org/copyright">OSM</a>';
+const TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+const TILE_ATTRIBUTION = '© <a href="https://www.openstreetmap.org/copyright">OSM</a>';
 
 interface ListingMapProps {
   listings: Listing[];
@@ -54,8 +47,6 @@ export function ListingMap({ listings, className = "", height = "500px" }: Listi
 
     L.tileLayer(TILE_URL, {
       maxZoom: 19,
-      tileSize: MAPBOX_TOKEN ? 512 : 256,
-      zoomOffset: MAPBOX_TOKEN ? -1 : 0,
     }).addTo(map);
 
     const bounds = L.latLngBounds([]);
