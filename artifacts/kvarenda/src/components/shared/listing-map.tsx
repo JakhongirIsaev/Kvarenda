@@ -69,8 +69,8 @@ export function ListingMap({ listings, className = "", height = "500px" }: Listi
       const icon = L.divIcon({
         className: "kv-marker-wrapper",
         html: `<div class="kv-price-marker">${formatted} so'm</div>`,
-        iconSize: [0, 0],
-        iconAnchor: [0, 0],
+        iconSize: [120, 40],
+        iconAnchor: [60, 40],
       });
 
       const latlng: [number, number] = [listing.latitude!, listing.longitude!];
@@ -144,45 +144,47 @@ export function ListingMap({ listings, className = "", height = "500px" }: Listi
           border: none !important;
         }
         .kv-price-marker {
-          background: #ffffff;
-          color: #1e293b;
-          border: 2px solid #cbd5e1;
-          border-radius: 20px;
-          padding: 4px 12px;
-          font-size: 12px;
-          font-weight: 600;
+          background: #2563eb;
+          color: #ffffff;
+          border: 2px solid #1d4ed8;
+          border-radius: 24px;
+          padding: 7px 16px;
+          font-size: 14px;
+          font-weight: 700;
           white-space: nowrap;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+          box-shadow: 0 4px 12px rgba(37,99,235,0.4);
           cursor: pointer;
           transition: all 0.15s ease;
           font-family: system-ui, -apple-system, sans-serif;
-          transform: translate(-50%, -100%);
-          position: relative;
+          position: absolute;
+          left: 50%;
+          bottom: 0;
+          transform: translateX(-50%);
+          letter-spacing: 0.01em;
         }
         .kv-price-marker::after {
           content: "";
           position: absolute;
-          bottom: -7px;
+          bottom: -8px;
           left: 50%;
           transform: translateX(-50%);
           width: 0;
           height: 0;
-          border-left: 6px solid transparent;
-          border-right: 6px solid transparent;
-          border-top: 7px solid #cbd5e1;
+          border-left: 7px solid transparent;
+          border-right: 7px solid transparent;
+          border-top: 8px solid #1d4ed8;
         }
         .kv-price-marker:hover,
         .kv-price-marker.active {
-          background: #2563eb;
-          color: #ffffff;
-          border-color: #2563eb;
-          transform: translate(-50%, -100%) scale(1.08);
+          background: #1e40af;
+          border-color: #1e3a8a;
+          transform: translateX(-50%) scale(1.12);
           z-index: 1000 !important;
-          box-shadow: 0 4px 14px rgba(37,99,235,0.35);
+          box-shadow: 0 6px 20px rgba(30,64,175,0.5);
         }
         .kv-price-marker:hover::after,
         .kv-price-marker.active::after {
-          border-top-color: #2563eb;
+          border-top-color: #1e3a8a;
         }
         .kv-popup .leaflet-popup-content-wrapper {
           padding: 0;
